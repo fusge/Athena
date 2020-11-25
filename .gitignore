@@ -9,6 +9,11 @@
 *.user
 *.userosscache
 *.sln.docstates
+*.json
+*.bin
+*.cmake
+*.exe
+
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -338,3 +343,4 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+/out/build/x64-Debug (default)/CMakeFiles/ShowIncludes/foo.h

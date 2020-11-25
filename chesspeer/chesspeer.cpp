@@ -2,11 +2,10 @@
 //
 
 #include "chesspeer.h"
-
-using namespace std;
+#include "chessboard.h"
 
 int main()
 {
-	cout << "Hello CMake." << endl;
-	return 0;
+	auto mychessboard = chesspeer::chessboard();
+	mychessboard.show();
 }
