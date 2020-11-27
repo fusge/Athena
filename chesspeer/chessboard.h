@@ -4,20 +4,30 @@
 #include <vector>
 #include <array>
 #include <string>
+#include <map>
 
 namespace chesspeer {
-	class chessboard {
-	private:
-		std::array<char, 64> board;
-		std::vector<std::string> moves;
+	struct Movenode {
+		std::string value;
+		int ply;
 		char color_to_move;
+		char captured_piece;
+		std::string en_passant;
 		bool black_castle_queenside;
 		bool black_castle_kingside;
 		bool white_castle_queenside;
 		bool white_castle_kingside;
-		std::string en_passant;
 		int plys_since_capture;
 		int total_moves;
+		struct Movenode* prevmove;
+		struct Movenode* nextmove;
+		std::map<std::string,struct Movenode*> sidelines;
+	};
+
+	class chessboard {
+	private:
+		std::array<char, 64> board;
+		struct Movenode* current_move;
 
 	public:
 		chessboard ();
@@ -25,7 +35,8 @@ namespace chesspeer {
 
 		std::string get_fen();
 		void set_board(std::string fen);
-		std::vector<std::string> get_moves();
+		void set_pieces_style();
+		// std::vector<std::string> get_moves();
 
 		void show();
 	};

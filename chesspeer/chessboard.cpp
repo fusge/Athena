@@ -19,10 +19,8 @@ void chesspeer::chessboard::set_board(std::string fen) {
 	std::array<char, 64>::iterator board_iter = this->board.begin();
 	std::string::iterator fen_iter = fen.begin();
 	int emptysquares;
+	struct chesspeer::Movenode* position = new chesspeer::Movenode();
 
-	if (board.begin() == board.end()) {
-		std::cout << "they are the same you dummy" << std::endl;
-	}
 	// First store the board pieces
 	for(board_iter; board_iter != this->board.end(); board_iter++) {
 		if (*fen_iter == '/') {
@@ -41,33 +39,38 @@ void chesspeer::chessboard::set_board(std::string fen) {
 
 	// Handle whos move is it anyway
 	fen_iter++;
-	this->color_to_move = *fen_iter;
+	position->color_to_move = *fen_iter;
 	fen_iter++;
 
 	// Handle castling rights
+	fen_iter++;
 	while (*fen_iter != ' ') {
 		switch (*fen_iter) {
-		case 'K': this->white_castle_kingside = true;
-		case 'Q': this->white_castle_queenside = true;
-		case 'k': this->black_castle_kingside = true;
-		case 'q': this->black_castle_queenside = true;
+		case 'K': position->white_castle_kingside = true;
+		case 'Q': position->white_castle_queenside = true;
+		case 'k': position->black_castle_kingside = true;
+		case 'q': position->black_castle_queenside = true;
 		default: fen_iter++;
 		}
 	}
 
 	// store en_passant squares
+	fen_iter++;
 	if (*fen_iter != '-') {
-		this->en_passant = std::string(fen_iter, fen_iter + 2);
+		position->en_passant = std::string(fen_iter, fen_iter + 2);
 		fen_iter = fen_iter + 3;
 	}
 	else {
+		position->en_passant = *fen_iter;
 		fen_iter = fen_iter + 2;
 	}
 
 	// store total moves and moves since last capture
-	this->plys_since_capture = *fen_iter;
+	position->plys_since_capture = *fen_iter -32;
 	fen_iter++;
-	this->total_moves = *fen_iter;
+	position->total_moves = *fen_iter - 32;
+
+	this->current_move = position;
 }
 
 void chesspeer::chessboard::show() {
@@ -80,8 +83,7 @@ void chesspeer::chessboard::show() {
 		counter++;
 	}
 	std::cout << std::endl;
-	std::string to_move = (this->color_to_move == 'w' || this->color_to_move == 'W') ? "white" : "black";
-	std::cout << to_move << " to move" << std::endl;
-	std::cout << "on move " << this->total_moves << std::endl;
+	std::cout << this->current_move->color_to_move << " to move" << std::endl;
+	std::cout << "on move " << this->current_move->total_moves << std::endl;
 }
 
