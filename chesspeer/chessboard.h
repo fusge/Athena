@@ -9,7 +9,7 @@
 namespace chesspeer {
 	struct Movenode {
 		std::string value;
-		int ply;
+		unsigned int ply;
 		char color_to_move;
 		char captured_piece;
 		std::string en_passant;
@@ -18,7 +18,7 @@ namespace chesspeer {
 		bool white_castle_queenside;
 		bool white_castle_kingside;
 		int plys_since_capture;
-		int total_moves;
+		int on_move;
 		struct Movenode* prevmove;
 		struct Movenode* nextmove;
 		std::map<std::string,struct Movenode*> sidelines;

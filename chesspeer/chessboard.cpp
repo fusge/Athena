@@ -3,7 +3,7 @@
 #include <iterator>
 #include <string>
 #include <iostream>
-#include <ctype.h>
+#include <cstdlib>
 
 chesspeer::chessboard::chessboard () {
 	std::string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -66,9 +66,14 @@ void chesspeer::chessboard::set_board(std::string fen) {
 	}
 
 	// store total moves and moves since last capture
-	position->plys_since_capture = *fen_iter -32;
+	auto start_digit = fen_iter;
+	while (*fen_iter != ' ') {
+		fen_iter++;
+	}
+	position->plys_since_capture = std::stoi(std::string(start_digit, fen_iter));
+
 	fen_iter++;
-	position->total_moves = *fen_iter - 32;
+	position->on_move = std::stoi(std::string(fen_iter, fen.end()));
 
 	this->current_move = position;
 }
@@ -84,6 +89,6 @@ void chesspeer::chessboard::show() {
 	}
 	std::cout << std::endl;
 	std::cout << this->current_move->color_to_move << " to move" << std::endl;
-	std::cout << "on move " << this->current_move->total_moves << std::endl;
+	std::cout << "on move " << this->current_move->on_move << std::endl;
 }
 
