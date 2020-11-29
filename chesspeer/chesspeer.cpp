@@ -8,4 +8,5 @@ int main()
 {
 	auto mychessboard = chesspeer::chessboard();
 	mychessboard.show();
+	std::cout << mychessboard.get_fen() << std::endl;
 }

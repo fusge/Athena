@@ -22,12 +22,13 @@ namespace chesspeer {
 		struct Movenode* prevmove;
 		struct Movenode* nextmove;
 		std::map<std::string,struct Movenode*> sidelines;
+		Movenode();
 	};
 
 	class chessboard {
 	private:
 		std::array<char, 64> board;
-		struct Movenode* current_move;
+		struct Movenode* position;
 
 	public:
 		chessboard ();
@@ -36,7 +37,7 @@ namespace chesspeer {
 		std::string get_fen();
 		void set_board(std::string fen);
 		void set_pieces_style();
-		// std::vector<std::string> get_moves();
+		std::vector<std::string> get_moves();
 
 		void show();
 	};

@@ -15,6 +15,7 @@ chesspeer::chessboard::chessboard (std::string fen) {
 }
 
 void chesspeer::chessboard::set_board(std::string fen) {
+	this->board.fill(' ');
 	std::cout << "Reading the standard fen string..." << std::endl;
 	std::array<char, 64>::iterator board_iter = this->board.begin();
 	std::string::iterator fen_iter = fen.begin();
@@ -75,7 +76,7 @@ void chesspeer::chessboard::set_board(std::string fen) {
 	fen_iter++;
 	position->on_move = std::stoi(std::string(fen_iter, fen.end()));
 
-	this->current_move = position;
+	this->position = position;
 }
 
 void chesspeer::chessboard::show() {
@@ -84,11 +85,76 @@ void chesspeer::chessboard::show() {
 		if (counter % 8 == 0) {
 			std::cout << std::endl;
 		}
-		std::cout << *iter << " ";
+		if (*iter == ' ') {
+			std::cout << char(254) << " ";
+		}
+		else {
+			std::cout << *iter << " ";
+		}
 		counter++;
 	}
 	std::cout << std::endl;
-	std::cout << this->current_move->color_to_move << " to move" << std::endl;
-	std::cout << "on move " << this->current_move->on_move << std::endl;
+	std::cout << this->position->color_to_move << " to move" << std::endl;
+	std::cout << "on move " << this->position->on_move << std::endl;
+}
+
+std::string chesspeer::chessboard::get_fen() {
+	std::string fen = "";
+	int col_counter = 0;
+	int empty_squares = 0;
+	for (auto board_iter = this->board.begin(); board_iter != this->board.end(); board_iter++) {
+		if ((col_counter % 8) == 0 && (col_counter != 0)) {
+			if (empty_squares != 0) {
+				fen += char(empty_squares + 48);
+				empty_squares = 0;
+			}
+			fen.append("/");
+		}
+		if (*board_iter == ' ') {
+			empty_squares++;
+			col_counter++;
+		}
+		else {
+			if (empty_squares != 0) {
+				fen += char(empty_squares + 48);
+				empty_squares = 0;
+			}
+			fen += *board_iter;
+			col_counter++;
+		}
+	}
+	if (empty_squares != 0) {
+		fen += char(empty_squares + 48);
+	}
+
+	fen += ' ';
+	fen += this->position->color_to_move;
+	fen += ' ';
+
+	if (this->position->white_castle_kingside == true) {
+		fen += 'K';
+	}
+	if (this->position->white_castle_queenside == true) {
+		fen += 'Q';
+	}
+	if (this->position->black_castle_kingside == true) {
+		fen += 'k';
+	}
+	if (this->position->black_castle_queenside == true) {
+		fen += 'q';
+	}
+
+	fen += ' ';
+	fen += this->position->en_passant;
+	fen += ' ';
+
+	char nums[4];
+	_itoa(this->position->plys_since_capture, nums, 10);
+	fen.append(nums);
+	fen += ' ';
+	_itoa(this->position->on_move, nums, 10);
+	fen.append(nums);
+
+	return fen;
 }
 
