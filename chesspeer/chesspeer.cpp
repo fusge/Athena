@@ -2,11 +2,11 @@
 //
 
 #include "chesspeer.h"
-#include "chessboard.h"
+#include "chessgame.h"
 
 int main()
 {
-	auto mychessboard = chesspeer::chessboard();
+	auto mychessboard = chesspeer::chessgame();
 	mychessboard.show();
 	std::cout << mychessboard.get_fen() << std::endl;
 }

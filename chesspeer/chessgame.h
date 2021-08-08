@@ -1,5 +1,5 @@
-#ifndef CHESSPEER_H
-#define CHESSPEER_H
+#ifndef CHESSGAME_H
+#define CHESSGAME_H
 
 #include <vector>
 #include <array>
@@ -23,20 +23,21 @@ namespace chesspeer {
 		int on_move;
 		struct Movenode* prevmove;
 		struct Movenode* nextmove;
-		std::map<std::string,struct Movenode*> sidelines;
+		std::map<std::string, struct Movenode*> sidelines;
 	};
 
-	class chessboard {
+	class chessgame {
 	private:
-		std::array<std::array<char,8>, 8> board;
+		std::array<std::array<char, 8>, 8> board;
 		struct Movenode* gameTree;
 		struct Movenode* currentPosition;
-		
-		void _drawLine(std::list<std::string> coord, std::pair<int, int> direction, bool iterate);
+
+		void _drawLine(std::list<std::string> *coordinates, std::pair<int, int> direction, bool iterate);
 		std::list<std::string> _availableMoves(std::string square, char piece);
+
 	public:
-		chessboard ();
-		chessboard (std::string fen);
+		chessgame();
+		chessgame(std::string fen);
 
 		std::string get_fen();
 		void set_board(std::string fen);
@@ -47,4 +48,4 @@ namespace chesspeer {
 	};
 }
 
-#endif /* CHESSPEER_H */
+#endif
