@@ -103,7 +103,7 @@ void chesspeer::chessgame::show() {
 std::string chesspeer::chessgame::get_fen() {
 	std::string fen = "";
 	int empty_squares = 0;
-	for (int row = 0; row < 8; row++) {
+	for (int row = 7; row >= 0; row--){
 		for (int col = 0; col < 8; col++) {
 			if (this->board[row][col] == ' ') {
 				empty_squares++;
@@ -118,10 +118,9 @@ std::string chesspeer::chessgame::get_fen() {
 		}
 		if (empty_squares != 0) {
 			fen += char(empty_squares + 48);
+            empty_squares = 0;
 		}
-		if (row != 7) {
-			fen += '/';
-		}
+	    fen += '/';
 	}
 
 	fen += ' ';
@@ -145,12 +144,10 @@ std::string chesspeer::chessgame::get_fen() {
 	fen += this->gameTree->en_passant;
 	fen += ' ';
 
-	char nums[4];
-	_itoa(this->gameTree->plys_since_capture, nums, 10);
-	fen.append(nums);
+	fen += std::to_string(this->gameTree->plys_since_capture);
 	fen += ' ';
-	_itoa(this->gameTree->on_move, nums, 10);
-	fen.append(nums);
+	fen += std::to_string(this->gameTree->on_move);
+	
 
 	return fen;
 }
