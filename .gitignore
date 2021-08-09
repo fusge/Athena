@@ -13,7 +13,8 @@
 *.bin
 *.cmake
 *.exe
-
+*.swp
+build/*
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
