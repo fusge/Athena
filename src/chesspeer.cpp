@@ -6,9 +6,8 @@
 #include "src/ChesspeerConfig.h"
 #include <iostream>
 
-int main(int argc, char *argv[])
-{
-    std::cout << *argv[0] << " VERSION " ;
+int main(int argc, char *argv[]){
+    std::cout << argv[0] << " VERSION " ;
     std::cout << CHESSPEER_VERSION_MAJOR << ".";
     std::cout << CHESSPEER_VERSION_MINOR << ".";
     std::cout << CHESSPEER_VERSION_PATCH << std::endl;
@@ -16,4 +15,7 @@ int main(int argc, char *argv[])
 	auto mychessboard = chesspeer::chessgame();
 	mychessboard.show();
 	std::cout << mychessboard.get_fen() << std::endl;
+
+    std::cout << "Testing movesets for core" << std::endl;
+
 }

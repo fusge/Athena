@@ -87,10 +87,10 @@ void chesspeer::chessgame::show() {
 	for (int row = 7; row >= 0; row--) {
 		for (int col = 0; col < 8; col++) {
 			if (board[row][col] == ' ') {
-				std::cout << char(254) << " ";
+				std::cout << "[ ]";
 			}
 			else {
-				std::cout << this->board[row][col] << " ";
+				std::cout << '[' << this->board[row][col] << ']';
 			}
 		}
 		std::cout << std::endl;
@@ -267,4 +267,8 @@ std::list<std::string> chesspeer::chessgame::_availableMoves(std::string square,
 	}
 
 	return result;
+}
+
+void play_move(std::string move){
+
 }
