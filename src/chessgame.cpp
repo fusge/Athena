@@ -167,7 +167,7 @@ void chesspeer::chessgame::_drawLine(std::list<std::string> *coordinates, std::p
 
 std::list<std::string> chesspeer::chessgame::_availableMoves(std::string square, char piece) {
 	std::list<std::string> result;
-	std::list<std::string>* coordinates{};
+	std::list<std::string>* coordinates;
 
 	// Queen moves
 	if (piece == 'q' || piece == 'Q') {
