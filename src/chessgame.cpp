@@ -153,8 +153,8 @@ std::string chesspeer::chessgame::get_fen() {
 }
 
 void chesspeer::chessgame::_drawLine(std::list<std::string> *coordinates, std::pair<int, int> direction, bool iterate) {
-	int row = int(coordinates->back()[0]) - 97;
-	int col = int(coordinates->back()[1]) - 48;
+	int col = int(coordinates->back()[0]) - 97;
+	int row = int(coordinates->back()[1]) - 49;
 	if (row < 0 || row > 7 || col < 0 || col > 7) return;
 	std::string new_coord;
 	new_coord.push_back(coordinates->back()[0] + direction.first);
@@ -167,7 +167,7 @@ void chesspeer::chessgame::_drawLine(std::list<std::string> *coordinates, std::p
 
 std::list<std::string> chesspeer::chessgame::_availableMoves(std::string square, char piece) {
 	std::list<std::string> result;
-	std::list<std::string>* coordinates;
+	std::list<std::string> *coordinates = new std::list<std::string>;
 
 	// Queen moves
 	if (piece == 'q' || piece == 'Q') {
@@ -267,6 +267,52 @@ std::list<std::string> chesspeer::chessgame::_availableMoves(std::string square,
 	}
 
 	return result;
+}
+
+char chesspeer::chessgame::identifyPiece(std::string move){
+    int col = int(move[0]) - 97;
+	int row = int(move[1]) - 49;
+    return this->board[row][col];
+}
+
+void chesspeer::chessgame::showPossibleMoves(std::string square){
+    char piece = identifyPiece(square);
+    if (piece == ' '){
+        std::cout << "There is no piece there." << std::endl;
+        return;
+    }
+    std::list<std::string> choices = this->_availableMoves(square, piece);
+    std::cout << "there are " << choices.size() << " available moves" << std::endl;
+    std::array<std::array<char, 8>, 8> allowedMovesBoard; 
+    for(int row=8; row >= 0; row--){
+        allowedMovesBoard[row].fill(' ');
+    }
+    allowedMovesBoard[int(square[1])-49][int(square[0])-97] = piece;
+
+    std::list<std::string>::iterator choices_iter = choices.begin();
+    std::list<std::string>::iterator choices_end = choices.end();
+    int row;
+    int col;
+    
+    for (choices_iter; choices_iter != choices_end; choices_iter++){
+        row = int((*choices_iter)[1]) - 49;
+        col = int((*choices_iter)[0]) - 97;
+        if (allowedMovesBoard[row][col] != ' ') continue;
+        allowedMovesBoard[row][col] = 'X';
+    }
+    
+    for (row = 7; row >= 0; row--) {
+		for (col = 0; col < 8; col++) {
+			if (allowedMovesBoard[row][col] == ' ') {
+				std::cout << "[ ]";
+			}
+			else {
+				std::cout << '[' << allowedMovesBoard[row][col] << ']';
+			}
+		}
+		std::cout << std::endl;
+	}
+	std::cout << std::endl;
 }
 
 void play_move(std::string move){

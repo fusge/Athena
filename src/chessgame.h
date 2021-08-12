@@ -43,8 +43,10 @@ namespace chesspeer {
 		void set_board(std::string fen);
 		void play_move(std::string move);
 		std::vector<std::string> get_moves();
+        char identifyPiece(std::string square);
 
 		void show();
+        void showPossibleMoves(std::string square);
 	};
 }
 
