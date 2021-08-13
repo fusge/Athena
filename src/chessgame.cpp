@@ -157,11 +157,13 @@ void chesspeer::chessgame::_drawLine(std::list<std::string> *coordinates, std::p
 	int row = int(coordinates->back()[1]) - 49;
 	if (row < 0 || row > 7 || col < 0 || col > 7) return;
 	std::string new_coord;
-	new_coord.push_back(coordinates->back()[0] + direction.first);
-	new_coord.push_back(coordinates->back()[1] + direction.second);
+    std::cout << row << " " << col << " " << char(coordinates->back()[0] + direction.first);
+    std::cout << char(coordinates->back()[1] + direction.second) << "\n";
+	new_coord.push_back(char(coordinates->back()[0] + direction.first));
+	new_coord.push_back(char(coordinates->back()[1] + direction.second));
 	coordinates->push_back(new_coord);
-	if (!iterate) return;
-	if (this->board[row][col] != ' ') return;
+	if (iterate == false) return;
+	if (this->board[row+direction.first][col+direction.second] != ' ') return;
 	this->_drawLine(coordinates, direction, iterate);
 }
 
@@ -201,7 +203,7 @@ std::list<std::string> chesspeer::chessgame::_availableMoves(std::string square,
 	else if (piece == 'r' || piece == 'R') {
 		for (int steprow = -1; steprow <= 1; steprow++) {
 			for (int stepcol = -1; stepcol <= 1; stepcol++) {
-				if (abs(stepcol) == abs(stepcol)) continue;
+				if (abs(steprow) == abs(stepcol)) continue;
 				coordinates->push_back(square);
 				// iterate to the end of the board or piece presence.
 				_drawLine(coordinates, std::make_pair(stepcol, steprow), true);
@@ -236,7 +238,7 @@ std::list<std::string> chesspeer::chessgame::_availableMoves(std::string square,
 				else if (piece == 'P' && steprow < 0) continue;
 				else {
 					coordinates->push_back(square);
-					_drawLine(coordinates, std::make_pair(stepcol, steprow), true);
+					_drawLine(coordinates, std::make_pair(stepcol, steprow), false);
 					result.splice(result.end(), *coordinates);
 				}
 			}
@@ -289,12 +291,10 @@ void chesspeer::chessgame::showPossibleMoves(std::string square){
     }
     allowedMovesBoard[int(square[1])-49][int(square[0])-97] = piece;
 
-    std::list<std::string>::iterator choices_iter = choices.begin();
-    std::list<std::string>::iterator choices_end = choices.end();
     int row;
     int col;
     
-    for (choices_iter; choices_iter != choices_end; choices_iter++){
+    for (auto choices_iter = choices.begin(); choices_iter != choices.end(); choices_iter++){
         row = int((*choices_iter)[1]) - 49;
         col = int((*choices_iter)[0]) - 97;
         if (allowedMovesBoard[row][col] != ' ') continue;
