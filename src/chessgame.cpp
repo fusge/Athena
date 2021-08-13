@@ -153,18 +153,16 @@ std::string chesspeer::chessgame::get_fen() {
 }
 
 void chesspeer::chessgame::_drawLine(std::list<std::string> *coordinates, std::pair<int, int> direction, bool iterate) {
-	int col = int(coordinates->back()[0]) - 97;
-	int row = int(coordinates->back()[1]) - 49;
+	int col = int(coordinates->back()[0]) - 97 + direction.first;
+	int row = int(coordinates->back()[1]) - 49 + direction.second;
 	if (row < 0 || row > 7 || col < 0 || col > 7) return;
 	std::string new_coord;
-    std::cout << row << " " << col << " " << char(coordinates->back()[0] + direction.first);
-    std::cout << char(coordinates->back()[1] + direction.second) << "\n";
 	new_coord.push_back(char(coordinates->back()[0] + direction.first));
 	new_coord.push_back(char(coordinates->back()[1] + direction.second));
 	coordinates->push_back(new_coord);
 	if (iterate == false) return;
-	if (this->board[row+direction.first][col+direction.second] != ' ') return;
-	this->_drawLine(coordinates, direction, iterate);
+	if (this->board[row+direction.second][col+direction.first] != ' ') return;
+	else this->_drawLine(coordinates, direction, iterate);
 }
 
 std::list<std::string> chesspeer::chessgame::_availableMoves(std::string square, char piece) {
@@ -284,16 +282,14 @@ void chesspeer::chessgame::showPossibleMoves(std::string square){
         return;
     }
     std::list<std::string> choices = this->_availableMoves(square, piece);
-    std::cout << "there are " << choices.size() << " available moves" << std::endl;
     std::array<std::array<char, 8>, 8> allowedMovesBoard; 
-    for(int row=8; row >= 0; row--){
+    for(int row=7; row >= 0; row--){
         allowedMovesBoard[row].fill(' ');
     }
     allowedMovesBoard[int(square[1])-49][int(square[0])-97] = piece;
 
     int row;
     int col;
-    
     for (auto choices_iter = choices.begin(); choices_iter != choices.end(); choices_iter++){
         row = int((*choices_iter)[1]) - 49;
         col = int((*choices_iter)[0]) - 97;

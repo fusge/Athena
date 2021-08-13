@@ -13,12 +13,15 @@ int main(int argc, char *argv[]){
     std::cout << CHESSPEER_VERSION_PATCH << std::endl;
 
 	auto mychessboard = chesspeer::chessgame();
-	mychessboard.show();
-	std::cout << mychessboard.get_fen() << std::endl;
+	//mychessboard.show();
+	//std::cout << mychessboard.get_fen() << std::endl;
 
     std::cout << "Testing movesets for core" << std::endl;
     char piece;
     std::string test_fen = "8/8/8/8/3P4/8/8/8 w KQkq - 0 1";
+    std::cout << "Bellow is the starting test position\n";
+    mychessboard.set_board(test_fen);
+    mychessboard.show();
     while (true){
         std::cout << "Please enter a piece" << std::endl;
         std::cin >> piece;
