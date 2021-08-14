@@ -22,7 +22,8 @@ void chesspeer::chessgame::set_board(std::string fen) {
 	std::cout << "Reading the standard fen string..." << std::endl;
 	std::string::iterator fen_iter = fen.begin();
 	int emptysquares;
-	struct chesspeer::Movenode* gameTree = new chesspeer::Movenode();
+	std::shared_ptr<chesspeer::Movenode> gameNode;
+    gameNode = std::make_shared<chesspeer::Movenode>();
 
 	// First store the board pieces
 	for (int row = 7; row >= 0; row--) {
@@ -44,17 +45,17 @@ void chesspeer::chessgame::set_board(std::string fen) {
 
 	// Handle whos move is it anyway
 	fen_iter++;
-	gameTree->color_to_move = *fen_iter;
+	gameNode->color_to_move = *fen_iter;
 	fen_iter++;
 
 	// Handle castling rights
 	fen_iter++;
 	while (*fen_iter != ' ') {
 		switch (*fen_iter) {
-		case 'K': gameTree->white_castle_kingside = true;
-		case 'Q': gameTree->white_castle_queenside = true;
-		case 'k': gameTree->black_castle_kingside = true;
-		case 'q': gameTree->black_castle_queenside = true;
+		case 'K': gameNode->white_castle_kingside = true;
+		case 'Q': gameNode->white_castle_queenside = true;
+		case 'k': gameNode->black_castle_kingside = true;
+		case 'q': gameNode->black_castle_queenside = true;
 		default: fen_iter++;
 		}
 	}
@@ -62,11 +63,11 @@ void chesspeer::chessgame::set_board(std::string fen) {
 	// store en_passant squares
 	fen_iter++;
 	if (*fen_iter != '-') {
-		gameTree->en_passant = std::string(fen_iter, fen_iter + 2);
+		gameNode->en_passant = std::string(fen_iter, fen_iter + 2);
 		fen_iter = fen_iter + 3;
 	}
 	else {
-		gameTree->en_passant = *fen_iter;
+		gameNode->en_passant = *fen_iter;
 		fen_iter = fen_iter + 2;
 	}
 
@@ -75,12 +76,12 @@ void chesspeer::chessgame::set_board(std::string fen) {
 	while (*fen_iter != ' ') {
 		fen_iter++;
 	}
-	gameTree->plys_since_capture = std::stoi(std::string(start_digit, fen_iter));
+	gameNode->plys_since_capture = std::stoi(std::string(start_digit, fen_iter));
 
 	// Store current move number
-	gameTree->on_move = std::stoi(std::string(fen_iter, fen.end()));
+	gameNode->on_move = std::stoi(std::string(fen_iter, fen.end()));
 
-	this->gameTree = gameTree;
+	this->gameTree = gameNode;
 }
 
 void chesspeer::chessgame::show(bool flipped) {
@@ -181,7 +182,9 @@ std::string chesspeer::chessgame::get_fen() {
 	return fen;
 }
 
-void chesspeer::chessgame::_drawLine(std::list<std::string> *coordinates, std::pair<int, int> direction, bool iterate) {
+void chesspeer::chessgame::_drawLine(std::shared_ptr<std::list<std::string>> coordinates, 
+                                     std::pair<int, int> direction, 
+                                     bool iterate) {
 	int col = int(coordinates->back()[0]) - 97 + direction.first;
 	int row = int(coordinates->back()[1]) - 49 + direction.second;
 	if (row < 0 || row > 7 || col < 0 || col > 7) return;
@@ -194,10 +197,12 @@ void chesspeer::chessgame::_drawLine(std::list<std::string> *coordinates, std::p
 	else this->_drawLine(coordinates, direction, iterate);
 }
 
-std::list<std::string> chesspeer::chessgame::_availableMoves(std::string square, char piece) {
-	std::list<std::string> result;
-	std::list<std::string> *coordinates = new std::list<std::string>;
+std::list<std::string> chesspeer::chessgame::_availableMoves(std::string square,
+                                                             char piece) {
 
+	std::list<std::string> result;
+	std::shared_ptr<std::list<std::string>> coordinates;
+    coordinates = std::make_shared<std::list<std::string>>();
 	// Queen moves
 	if (piece == 'q' || piece == 'Q') {
 		for (int steprow = -1; steprow <= 1; steprow++) {
