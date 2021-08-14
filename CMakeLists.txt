@@ -6,7 +6,9 @@ cmake_minimum_required (VERSION 3.8)
 project ("Chesspeer" VERSION 0.1.0 LANGUAGES CXX)
 
 # Include sub-projects.
+add_subdirectory ("lib")
 add_subdirectory ("src")
+add_subdirectory ("tst")
 
 # Installation targets
 install(TARGETS Chesspeer DESTINATION bin)

@@ -83,18 +83,47 @@ void chesspeer::chessgame::set_board(std::string fen) {
 	this->gameTree = gameTree;
 }
 
-void chesspeer::chessgame::show() {
-	for (int row = 7; row >= 0; row--) {
-		for (int col = 0; col < 8; col++) {
-			if (board[row][col] == ' ') {
-				std::cout << "[ ]";
-			}
-			else {
-				std::cout << '[' << this->board[row][col] << ']';
-			}
-		}
-		std::cout << std::endl;
-	}
+void chesspeer::chessgame::show(bool flipped) {
+    if (!flipped){
+	    for (int row = 7; row >= 0; row--) {
+            std::cout << row+1 << " ";
+	    	for (int col = 0; col < 8; col++) {
+	    		if (board[row][col] == ' ') {
+	    			std::cout << "[ ]";
+	    		}
+	    		else {
+	    			std::cout << '[' << this->board[row][col] << ']';
+	    		}
+	    	}
+	    	std::cout << std::endl;
+	    }
+    }
+    else{
+        for (int row = 0; row < 8; row++){
+            std::cout << row+1 << " ";
+	    	for (int col = 7; col >= 0; col--){
+	    		if (board[row][col] == ' ') {
+	    			std::cout << "[ ]";
+	    		}
+	    		else {
+	    			std::cout << '[' << this->board[row][col] << ']';
+	    		}
+	    	}
+	    	std::cout << std::endl;
+	    }
+    }
+    std::cout << "   ";
+    if (!flipped){
+        for (int file = 0; file < 8; file++){
+            std::cout << char(file+97) << "  ";
+        }
+    }
+    else {
+        for (int file = 7; file >= 0; file--){
+            std::cout << char(file+97) << "  ";
+        }
+    }
+    
 	std::cout << std::endl;
 	std::cout << this->gameTree->color_to_move << " to move" << std::endl;
 	std::cout << "on move " << this->gameTree->on_move << std::endl;
@@ -311,6 +340,12 @@ void chesspeer::chessgame::showPossibleMoves(std::string square){
 	std::cout << std::endl;
 }
 
-void play_move(std::string move){
-
+void chesspeer::chessgame::play_move(std::string move){
+    if (move.length() != 4){
+        std::cout << "Please enter move in the format: \n";
+        std::cout << " <startfile><startrow><endfile><endrow>\n";
+        std::cout << "e.g. e4 -> e2e4" << std::endl;
+        return;
+    }
+    
 }

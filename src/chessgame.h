@@ -5,7 +5,7 @@
 #include <array>
 #include <string>
 #include <list>
-#include <map>
+#include <vector>
 #include <utility>
 
 namespace chesspeer {
@@ -21,9 +21,9 @@ namespace chesspeer {
 		bool white_castle_kingside;
 		int plys_since_capture;
 		int on_move;
+        std::string move_played;
 		struct Movenode* prevmove;
-		struct Movenode* nextmove;
-		std::map<std::string, struct Movenode*> sidelines;
+		std::vector<struct Movenode*> sidelines;
 	};
 
 	class chessgame {
@@ -45,7 +45,7 @@ namespace chesspeer {
 		std::vector<std::string> get_moves();
         char identifyPiece(std::string square);
 
-		void show();
+		void show(bool fliped);
         void showPossibleMoves(std::string square);
 	};
 }
