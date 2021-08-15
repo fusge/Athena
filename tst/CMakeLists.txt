@@ -9,6 +9,8 @@ set(SOURCES ${PROJECT_NAME}Tests.cpp)
 add_executable (${BINARY}
     ${SOURCES})
 
-add_test(NAME ${BINARY} COMMAND ${BINARY})
+target_include_directories(${PROJECT_NAME} 
+    PUBLIC ${PROJECT_BINARY_DIR}/lib/googletest/include
+)
 
-target_link_libraries(${BINARY} PUBLIC ${PROJECT_NAME}_lib gtest)
+target_link_libraries(${BINARY} PUBLIC gtest)
