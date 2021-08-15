@@ -182,7 +182,7 @@ std::string chesspeer::chessgame::get_fen() {
 	return fen;
 }
 
-void chesspeer::chessgame::_drawLine(std::shared_ptr<std::list<std::string>> coordinates, 
+void chesspeer::chessgame::_drawLine(std::shared_ptr<std::list<std::string> > coordinates,
                                      std::pair<int, int> direction, 
                                      bool iterate) {
 	int col = int(coordinates->back()[0]) - 97 + direction.first;
@@ -201,8 +201,8 @@ std::list<std::string> chesspeer::chessgame::_availableMoves(std::string square,
                                                              char piece) {
 
 	std::list<std::string> result;
-	std::shared_ptr<std::list<std::string>> coordinates;
-    coordinates = std::make_shared<std::list<std::string>>();
+	std::shared_ptr<std::list<std::string> > coordinates;
+    coordinates = std::make_shared<std::list<std::string> >();
 	// Queen moves
 	if (piece == 'q' || piece == 'Q') {
 		for (int steprow = -1; steprow <= 1; steprow++) {
