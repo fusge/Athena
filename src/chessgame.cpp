@@ -7,14 +7,14 @@
 
 chesspeer::chessgame::chessgame() {
 	std::string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-	this->set_board(fen);
+	this->setBoard(fen);
 }
 
 chesspeer::chessgame::chessgame(std::string fen) {
-	this->set_board(fen);
+	this->setBoard(fen);
 }
 
-void chesspeer::chessgame::set_board(std::string fen) {
+void chesspeer::chessgame::setBoard(std::string fen) {
 	for (int row = 0; row < 8; row++) {
 		this->board[row].fill(' ');
 	}
@@ -345,12 +345,25 @@ void chesspeer::chessgame::showPossibleMoves(std::string square){
 	std::cout << std::endl;
 }
 
-void chesspeer::chessgame::play_move(std::string move){
+void chesspeer::chessgame::playMove(std::string move){
     if (move.length() != 4){
         std::cout << "Please enter move in the format: \n";
         std::cout << " <startfile><startrow><endfile><endrow>\n";
         std::cout << "e.g. e4 -> e2e4" << std::endl;
         return;
     }
+    std::string start_square = move.substr(0,2);
+    std::string end_square = move.substr(2,2);
+    
+    bool match = false;
+    std::list<std::string> choices = _availableMoves(start_square, identifyPiece(start_square));
+    for(auto iter = choices.begin(); iter != choices.end(); iter++){
+        if(*iter == end_square){
+            match = true;
+            break;
+        }
+    }
+    if(!match) return;
+    
     
 }

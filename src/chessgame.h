@@ -41,13 +41,17 @@ namespace chesspeer {
 		chessgame(std::string fen);
 
 		std::string get_fen();
-		void set_board(std::string fen);
-		void play_move(std::string move);
+		void setBoard(std::string fen);
+		void playMove(std::string move);
 		std::vector<std::string> get_moves();
         char identifyPiece(std::string square);
 
 		void show(bool fliped);
         void showPossibleMoves(std::string square);
+        
+        bool checkCapctures(std::string move);
+        bool checkChecks(std::string move);
+        bool checkPins(std::string move);
 	};
 }
 
