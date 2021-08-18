@@ -11,7 +11,6 @@
 
 namespace chesspeer {
 	struct Movenode {
-		std::string value;
 		int ply;
 		char color_to_move;
 		char captured_piece;
@@ -23,7 +22,7 @@ namespace chesspeer {
 		int plys_since_capture;
 		int on_move;
         std::string move_played;
-		struct Movenode* prevmove;
+		std::shared_ptr<Movenode> prevmove;
 		std::vector<std::shared_ptr<Movenode> > sidelines;
 	};
 
@@ -35,23 +34,25 @@ namespace chesspeer {
 
 		void _drawLine(std::shared_ptr<std::list<std::string> > coordinates, std::pair<int, int> direction, bool iterate);
 		std::list<std::string> _availableMoves(std::string square, char piece);
+        bool _validCapture(std::string move_set);
+        bool _checkChecks(std::string move_set);
+        bool _checkPins(std::string move_set);
+        void _updateBoard(std::string move_set);
 
 	public:
 		chessgame();
 		chessgame(std::string fen);
+        ~chessgame();
 
-		std::string get_fen();
+		std::string getFen();
 		void setBoard(std::string fen);
-		void playMove(std::string move);
-		std::vector<std::string> get_moves();
+		void playMove(std::string move_set);
         char identifyPiece(std::string square);
 
 		void show(bool fliped);
         void showPossibleMoves(std::string square);
         
-        bool checkCapctures(std::string move);
-        bool checkChecks(std::string move);
-        bool checkPins(std::string move);
+
 	};
 }
 

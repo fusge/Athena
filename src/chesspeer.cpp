@@ -1,4 +1,4 @@
-﻿// chesspeer.cpp : Defines the entry point for the application.
+// chesspeer.cpp : Defines the entry point for the application.
 //
 
 //#include "chesspeer.h"

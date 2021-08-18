@@ -130,7 +130,7 @@ void chesspeer::chessgame::show(bool flipped) {
 	std::cout << "on move " << this->gameTree->on_move << std::endl;
 }
 
-std::string chesspeer::chessgame::get_fen() {
+std::string chesspeer::chessgame::getFen() {
 	std::string fen = "";
 	int empty_squares = 0;
 	for (int row = 7; row >= 0; row--){
@@ -345,16 +345,18 @@ void chesspeer::chessgame::showPossibleMoves(std::string square){
 	std::cout << std::endl;
 }
 
-void chesspeer::chessgame::playMove(std::string move){
-    if (move.length() != 4){
+void chesspeer::chessgame::playMove(std::string move_set){
+    // Check that we are getting the right formatted string
+    if (move_set.length() != 4){
         std::cout << "Please enter move in the format: \n";
         std::cout << " <startfile><startrow><endfile><endrow>\n";
         std::cout << "e.g. e4 -> e2e4" << std::endl;
         return;
     }
-    std::string start_square = move.substr(0,2);
-    std::string end_square = move.substr(2,2);
     
+    // get source and destination strings and check for available moves
+    std::string start_square = move_set.substr(0,2);
+    std::string end_square = move_set.substr(2,2);
     bool match = false;
     std::list<std::string> choices = _availableMoves(start_square, identifyPiece(start_square));
     for(auto iter = choices.begin(); iter != choices.end(); iter++){
@@ -363,7 +365,66 @@ void chesspeer::chessgame::playMove(std::string move){
             break;
         }
     }
+    // return if the move doesn't make sense
     if(!match) return;
+    // check whether there is a capture (empty squares return true)
+    else if(!_validCapture(move_set)) return;
+    else _updateBoard(move_set);
+}
+
+bool chesspeer::chessgame::_validCapture(const std::string move_set){
+    char piece = identifyPiece(move_set.substr(0, 2));
+    char captured_piece = identifyPiece(move_set.substr(2, 2));
+    if ((int(piece)-int(captured_piece)) > 8) return true;
+    else if(captured_piece == ' ') return true;
+    else return false;
+}
+
+bool chesspeer::chessgame::_checkChecks(std::string move_set){
+    return false;
+}
+
+bool chesspeer::chessgame::_checkPins(std::string move_set){
+    return false;
+}
+
+void chesspeer::chessgame::_updateBoard(std::string move_set){
+    char piece = identifyPiece(move_set.substr(0, 2));
+    std::string start_square = move_set.substr(0, 2);
+    std::string move_str = move_set.substr(2, 2);
+    if(int(piece) > 60)
+        move_str.insert(0, std::string(1, piece-20));
+    else
+        move_str.insert(0, std::string(1, piece));
     
+    // first check whether the move is valid
+    if(!_checkPins(move_set) || !_validCapture(move_set)) return;
     
+    std::shared_ptr<Movenode> added_movenode = std::make_shared<Movenode>();
+    *added_movenode = *currentPosition;
+    
+    // Update board
+    board[int(start_square[1])-49][int(start_square[0]-97)] = ' ';
+    added_movenode->captured_piece = board[int(move_str[1]-49)][int(move_str[0]-97)];
+    board[int(move_str[1]-49)][int(move_str[0]-97)] = piece;
+    
+    // Update game state
+    added_movenode->move_played = move_str;
+    added_movenode->ply++;
+    
+    if (currentPosition->color_to_move == 'w')
+        added_movenode->color_to_move = 'b';
+    else
+        added_movenode->color_to_move = 'w';
+    
+    if (added_movenode->captured_piece != ' ')
+        added_movenode->plys_since_capture = 0;
+    else
+        added_movenode->plys_since_capture++;
+    
+    added_movenode->on_move++;
+    added_movenode->prevmove = currentPosition;
+    
+    currentPosition->sidelines.push_back(added_movenode);
+    currentPosition = added_movenode;
 }
