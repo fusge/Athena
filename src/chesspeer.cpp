@@ -15,5 +15,5 @@ int main(int argc, char *argv[]){
 	auto mychessboard = chesspeer::chessgame();
 	mychessboard.show(false);
     mychessboard.show(true);
-	std::cout << mychessboard.get_fen() << std::endl;
+	std::cout << mychessboard.getFen() << std::endl;
 }
