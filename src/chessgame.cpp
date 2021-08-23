@@ -455,7 +455,12 @@ void chesspeer::chessgame::_updateBoard(std::string move_set){
     }
     
     added_movenode->prevmove = currentPosition;
-    
+
+    added_movenode->black_castle_queenside = currentPosition->black_castle_queenside;
+    added_movenode->black_castle_kingside = currentPosition->black_castle_kingside;
+    added_movenode->white_castle_queenside = currentPosition->white_castle_queenside;
+    added_movenode->white_castle_kingside = currentPosition->white_castle_kingside;
+ 
     currentPosition->sidelines.push_back(added_movenode);
     currentPosition = added_movenode;
 
