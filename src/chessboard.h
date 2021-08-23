@@ -9,42 +9,42 @@
 #include <utility>
 
 namespace chesspeer {
-	struct Movenode {
-		std::string value;
-		int ply;
-		char color_to_move;
-		char captured_piece;
-		std::string en_passant;
-		bool black_castle_queenside;
-		bool black_castle_kingside;
-		bool white_castle_queenside;
-		bool white_castle_kingside;
-		int plys_since_capture;
-		int on_move;
-		struct Movenode* prevmove;
-		struct Movenode* nextmove;
-		std::map<std::string,struct Movenode*> sidelines;
-	};
+    struct Movenode {
+        std::string value;
+        int ply;
+        char color_to_move;
+        char captured_piece;
+        std::string en_passant;
+        bool black_castle_queenside;
+        bool black_castle_kingside;
+        bool white_castle_queenside;
+        bool white_castle_kingside;
+        int plys_since_capture;
+        int on_move;
+        struct Movenode* prevmove;
+        struct Movenode* nextmove;
+        std::map<std::string,struct Movenode*> sidelines;
+    };
 
-	class chessboard {
-	private:
-		std::array<std::array<char,8>, 8> board;
-		struct Movenode* gameTree;
-		struct Movenode* currentPosition;
-		
-		void _drawLine(std::list<std::string> coord, std::pair<int, int> direction, bool iterate);
-		std::list<std::string> _availableMoves(std::string square, char piece);
-	public:
-		chessboard ();
-		chessboard (std::string fen);
+    class chessboard {
+    private:
+        std::array<std::array<char,8>, 8> board;
+        struct Movenode* gameTree;
+        struct Movenode* currentPosition;
+        
+        void _drawLine(std::list<std::string> coord, std::pair<int, int> direction, bool iterate);
+        std::list<std::string> _availableMoves(std::string square, char piece);
+    public:
+        chessboard ();
+        chessboard (std::string fen);
 
-		std::string get_fen();
-		void set_board(std::string fen);
-		void play_move(std::string move);
-		std::vector<std::string> get_moves();
+        std::string get_fen();
+        void set_board(std::string fen);
+        void play_move(std::string move);
+        std::vector<std::string> get_moves();
 
-		void show();
-	};
+        void show();
+    };
 }
 
 #endif /* CHESSPEER_H */

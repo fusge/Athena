@@ -12,8 +12,8 @@ int main(int argc, char *argv[]){
     std::cout << CHESSPEER_VERSION_MINOR << ".";
     std::cout << CHESSPEER_VERSION_PATCH << std::endl;
 
-	auto mychessboard = chesspeer::chessgame();
-	mychessboard.show(false);
+    auto mychessboard = chesspeer::chessgame();
+    mychessboard.show(false);
     mychessboard.show(true);
-	std::cout << mychessboard.getFen() << std::endl;
+    std::cout << mychessboard.getFen() << std::endl;
 }
