@@ -83,7 +83,8 @@ void chesspeer::chessgame::setBoard(std::string fen) {
     // Store current move number
     gameNode->on_move = std::stoi(std::string(fen_iter, fen.end()));
 
-    this->gameTree = gameNode;
+    gameTree = gameNode;
+    currentPosition = gameNode;
 }
 
 void chesspeer::chessgame::show(bool flipped) {
@@ -417,19 +418,20 @@ bool chesspeer::chessgame::_checkPins(std::string move_set){
 void chesspeer::chessgame::_updateBoard(std::string move_set){
     char piece = identifyPiece(move_set.substr(0, 2));
     std::string start_square = move_set.substr(0, 2);
+    std::string end_square = move_set.substr(2, 2);
     std::string move_str = move_set.substr(2, 2);
-    if(int(piece) > 60)
-        move_str.insert(0, std::string(1, piece-20));
+    if(int(piece) > 96)
+        move_str.insert(0, std::string(1, piece-32));
     else
         move_str.insert(0, std::string(1, piece));
     
     std::shared_ptr<Movenode> added_movenode = std::make_shared<Movenode>();
-    *added_movenode = *currentPosition;
+    //*added_movenode = *currentPosition;
     
     // Update board
-    board[int(start_square[1])-49][int(start_square[0]-97)] = ' ';
-    added_movenode->captured_piece = board[int(move_str[1]-49)][int(move_str[0]-97)];
-    board[int(move_str[1]-49)][int(move_str[0]-97)] = piece;
+    board[int(start_square[1])-49][int(start_square[0])-97] = ' ';
+    added_movenode->captured_piece = board[int(end_square[1])-49][int(end_square[0])-97];
+    board[int(end_square[1])-49][int(end_square[0])-97] = piece;
     
     // Update game state
     added_movenode->pgn_move_played = move_str;
