@@ -129,8 +129,8 @@ void chesspeer::chessgame::show(bool flipped) {
     }
     
     std::cout << std::endl;
-    std::cout << this->gameTree->color_to_move << " to move" << std::endl;
-    std::cout << "on move " << this->gameTree->on_move << std::endl;
+    std::cout << currentPosition->color_to_move << " to move" << std::endl;
+    std::cout << "on move " << currentPosition->on_move << std::endl;
 }
 
 std::string chesspeer::chessgame::getFen() {
