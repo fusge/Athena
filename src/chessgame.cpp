@@ -396,7 +396,7 @@ std::string chesspeer::chessgame::_findKing(char color){
         square = "e1";
     }
 
-    while (temp_node->prevmove != NULL){
+    while (temp_node->prevmove != nullptr){
         if (temp_node->pgn_move_played.front() == 'K' && temp_node->color_to_move != color){
             square = temp_node->move_played.substr(2, 2);
             break;
