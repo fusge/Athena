@@ -195,7 +195,6 @@ void chesspeer::chessgame::_drawLine(std::shared_ptr<std::list<std::string> > co
     new_coord.push_back(char(coordinates->back()[0] + direction.first));
     new_coord.push_back(char(coordinates->back()[1] + direction.second));
     coordinates->push_back(new_coord);
-    std::cout << new_coord << " " << board[row+direction.second][col+direction.first] << '\n';
     if (iterate == false) return;
     if (board[row][col] != ' ') return;
     else this->_drawLine(coordinates, direction, iterate);
