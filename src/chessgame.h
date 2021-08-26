@@ -23,18 +23,18 @@ namespace chesspeer {
         int on_move;
         std::string pgn_move_played;
         std::string move_played;
-        std::shared_ptr<Movenode> prevmove;
-        std::vector<std::shared_ptr<Movenode> > sidelines;
+        int prev_move_id;
+        std::vector<Movenode> sidelines;
     };
 
     class chessgame {
     private:
         std::array<std::array<char, 8>, 8> board;
-        std::shared_ptr<Movenode> gameTree;
-        std::shared_ptr<Movenode> currentPosition;
+        std::vector<Movenode> gameTree;
+        int currentPositionID;
 
-        void _drawLine(std::shared_ptr<std::list<std::string> > coordinates, std::pair<int, int> direction, bool iterate);
-        std::list<std::string> _availableMoves(std::string square, char piece);
+        void _drawLine(std::shared_ptr<std::vector<std::string> > coordinates, std::pair<int, int> direction, bool iterate);
+        std::vector<std::string> _availableMoves(std::string square, char piece);
         bool _validCapture(std::string move_set);
         bool _kingInCheck(std::string move_set, char color);
         bool _checkPins(std::string move_set);

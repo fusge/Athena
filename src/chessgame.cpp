@@ -24,8 +24,7 @@ void chesspeer::chessgame::setBoard(std::string fen) {
     std::cout << "Reading the standard fen string..." << std::endl;
     std::string::iterator fen_iter = fen.begin();
     int emptysquares;
-    std::shared_ptr<chesspeer::Movenode> gameNode;
-    gameNode = std::make_shared<chesspeer::Movenode>();
+    Movenode gameNode = Movenode();
 
     // First store the board pieces
     for (int row = 7; row >= 0; row--) {
@@ -47,17 +46,17 @@ void chesspeer::chessgame::setBoard(std::string fen) {
 
     // Handle whos move is it anyway
     fen_iter++;
-    gameNode->color_to_move = *fen_iter;
+    gameNode.color_to_move = *fen_iter;
     fen_iter++;
 
     // Handle castling rights
     fen_iter++;
     while (*fen_iter != ' ') {
         switch (*fen_iter) {
-        case 'K': gameNode->white_castle_kingside = true;
-        case 'Q': gameNode->white_castle_queenside = true;
-        case 'k': gameNode->black_castle_kingside = true;
-        case 'q': gameNode->black_castle_queenside = true;
+        case 'K': gameNode.white_castle_kingside = true;
+        case 'Q': gameNode.white_castle_queenside = true;
+        case 'k': gameNode.black_castle_kingside = true;
+        case 'q': gameNode.black_castle_queenside = true;
         default: fen_iter++;
         }
     }
@@ -65,11 +64,11 @@ void chesspeer::chessgame::setBoard(std::string fen) {
     // store en_passant squares
     fen_iter++;
     if (*fen_iter != '-') {
-        gameNode->en_passant = std::string(fen_iter, fen_iter + 2);
+        gameNode.en_passant = std::string(fen_iter, fen_iter + 2);
         fen_iter = fen_iter + 3;
     }
     else {
-        gameNode->en_passant = *fen_iter;
+        gameNode.en_passant = *fen_iter;
         fen_iter = fen_iter + 2;
     }
 
@@ -78,13 +77,13 @@ void chesspeer::chessgame::setBoard(std::string fen) {
     while (*fen_iter != ' ') {
         fen_iter++;
     }
-    gameNode->plys_since_capture = std::stoi(std::string(start_digit, fen_iter));
+    gameNode.plys_since_capture = std::stoi(std::string(start_digit, fen_iter));
 
     // Store current move number
-    gameNode->on_move = std::stoi(std::string(fen_iter, fen.end()));
+    gameNode.on_move = std::stoi(std::string(fen_iter, fen.end()));
 
-    gameTree = gameNode;
-    currentPosition = gameNode;
+    gameTree.push_back(gameNode);
+    currentPositionID = gameTree.size() - 1;
 }
 
 void chesspeer::chessgame::show(bool flipped) {
@@ -129,8 +128,8 @@ void chesspeer::chessgame::show(bool flipped) {
     }
     
     std::cout << std::endl;
-    std::cout << currentPosition->color_to_move << " to move" << std::endl;
-    std::cout << "on move " << currentPosition->on_move << std::endl;
+    std::cout << gameTree[currentPositionID].color_to_move << " to move" << std::endl;
+    std::cout << "on move " << gameTree[currentPositionID].on_move << std::endl;
 }
 
 std::string chesspeer::chessgame::getFen() {
@@ -157,35 +156,35 @@ std::string chesspeer::chessgame::getFen() {
     }
 
     fen += ' ';
-    fen += this->gameTree->color_to_move;
+    fen += gameTree[currentPositionID].color_to_move;
     fen += ' ';
 
-    if (this->gameTree->white_castle_kingside == true) {
+    if (gameTree[currentPositionID].white_castle_kingside == true) {
         fen += 'K';
     }
-    if (this->gameTree->white_castle_queenside == true) {
+    if (gameTree[currentPositionID].white_castle_queenside == true) {
         fen += 'Q';
     }
-    if (this->gameTree->black_castle_kingside == true) {
+    if (gameTree[currentPositionID].black_castle_kingside == true) {
         fen += 'k';
     }
-    if (this->gameTree->black_castle_queenside == true) {
+    if (gameTree[currentPositionID].black_castle_queenside == true) {
         fen += 'q';
     }
 
     fen += ' ';
-    fen += this->gameTree->en_passant;
+    fen += gameTree[currentPositionID].en_passant;
     fen += ' ';
 
-    fen += std::to_string(this->gameTree->plys_since_capture);
+    fen += std::to_string(gameTree[currentPositionID].plys_since_capture);
     fen += ' ';
-    fen += std::to_string(this->gameTree->on_move);
+    fen += std::to_string(gameTree[currentPositionID].on_move);
     
 
     return fen;
 }
 
-void chesspeer::chessgame::_drawLine(std::shared_ptr<std::list<std::string> > coordinates,
+void chesspeer::chessgame::_drawLine(std::shared_ptr<std::vector<std::string> > coordinates,
                                      std::pair<int, int> direction, 
                                      bool iterate) {
     int col = int(coordinates->back()[0]) - 97 + direction.first;
@@ -197,15 +196,14 @@ void chesspeer::chessgame::_drawLine(std::shared_ptr<std::list<std::string> > co
     coordinates->push_back(new_coord);
     if (iterate == false) return;
     if (board[row][col] != ' ') return;
-    else this->_drawLine(coordinates, direction, iterate);
+    else _drawLine(coordinates, direction, iterate);
 }
 
-std::list<std::string> chesspeer::chessgame::_availableMoves(std::string square,
+std::vector<std::string> chesspeer::chessgame::_availableMoves(std::string square,
                                                              char piece) {
-
-    std::list<std::string> result;
-    std::shared_ptr<std::list<std::string> > coordinates;
-    coordinates = std::make_shared<std::list<std::string> >();
+    std::vector<std::string> result;
+    std::shared_ptr<std::vector<std::string> > coordinates;
+    coordinates = std::make_shared<std::vector<std::string> >();
     // Queen moves
     if (piece == 'q' || piece == 'Q') {
         for (int steprow = -1; steprow <= 1; steprow++) {
@@ -214,7 +212,7 @@ std::list<std::string> chesspeer::chessgame::_availableMoves(std::string square,
                 coordinates->push_back(square);
                 // iterate to the end of board or piece presence
                 _drawLine(coordinates, std::make_pair(stepcol, steprow), true);
-                result.splice(result.end(), *coordinates);
+                result.insert(result.end(), coordinates->begin(), coordinates->end());
             }
         }
     }
@@ -227,29 +225,29 @@ std::list<std::string> chesspeer::chessgame::_availableMoves(std::string square,
                 coordinates->push_back(square);
                 // only find first squares
                 _drawLine(coordinates, std::make_pair(stepcol, steprow), false);
-                result.splice(result.end(), *coordinates);
+                result.insert(result.end(), coordinates->begin(), coordinates->end());
             }
         }
         // Handle castles
         if (piece == 'K' && square == "e1"){
-            if (currentPosition->white_castle_kingside && board[0][5] == ' ' && board[0][6] == ' '){
+            if (gameTree[currentPositionID].white_castle_kingside && board[0][5] == ' ' && board[0][6] == ' '){
                 square[0] += 2;
                 result.push_back(square);
                 square[0] -= 2;
             }
-            if (currentPosition->white_castle_queenside && board[0][3] == ' ' && board[0][2] == ' '){
+            if (gameTree[currentPositionID].white_castle_queenside && board[0][3] == ' ' && board[0][2] == ' '){
                 square[0] -= 2;
                 result.push_back(square);
                 square[0] += 2;
             }
         }
         if (piece == 'k' && square == "e8"){
-            if (currentPosition->black_castle_kingside && board[0][5] == ' ' && board[0][6] == ' '){
+            if (gameTree[currentPositionID].black_castle_kingside && board[0][5] == ' ' && board[0][6] == ' '){
                 square[0] += 2;
                 result.push_back(square);
                 square[0] -= 2;
             }
-            if (currentPosition->black_castle_queenside && board[0][3] == ' ' && board[0][2] == ' '){
+            if (gameTree[currentPositionID].black_castle_queenside && board[0][3] == ' ' && board[0][2] == ' '){
                 square[0] -= 2;
                 result.push_back(square);
                 square[0] += 2;
@@ -265,7 +263,7 @@ std::list<std::string> chesspeer::chessgame::_availableMoves(std::string square,
                 coordinates->push_back(square);
                 // iterate to the end of the board or piece presence.
                 _drawLine(coordinates, std::make_pair(stepcol, steprow), true);
-                result.splice(result.end(), *coordinates);
+                result.insert(result.end(), coordinates->begin(), coordinates->end());
             }
         }
     }
@@ -278,7 +276,7 @@ std::list<std::string> chesspeer::chessgame::_availableMoves(std::string square,
                 coordinates->push_back(square);
                 // iterate to the end of the board or piece presence
                 _drawLine(coordinates, std::make_pair(stepcol, steprow), true);
-                result.splice(result.end(), *coordinates);
+                result.insert(result.end(), coordinates->begin(), coordinates->end());
             }
         }
     }
@@ -298,7 +296,7 @@ std::list<std::string> chesspeer::chessgame::_availableMoves(std::string square,
                 else {
                     coordinates->push_back(square);
                     _drawLine(coordinates, std::make_pair(stepcol, steprow), false);
-                    result.splice(result.end(), *coordinates);
+                    result.insert(result.end(), coordinates->begin(), coordinates->end());
                 }
             }
         }
@@ -321,7 +319,7 @@ std::list<std::string> chesspeer::chessgame::_availableMoves(std::string square,
                     coordinates->push_back(square);
                     // iterate only once
                     _drawLine(coordinates, std::make_pair(stepcol, steprow), false);
-                    result.splice(result.end(), *coordinates);
+                    result.insert(result.end(), coordinates->begin(), coordinates->end());
                 }
             }
         }
@@ -342,7 +340,7 @@ void chesspeer::chessgame::showPossibleMoves(std::string square){
         std::cout << "There is no piece there." << std::endl;
         return;
     }
-    std::list<std::string> choices = this->_availableMoves(square, piece);
+    std::vector<std::string> choices = this->_availableMoves(square, piece);
     std::array<std::array<char, 8>, 8> allowedMovesBoard; 
     for(int row=7; row >= 0; row--){
         allowedMovesBoard[row].fill(' ');
@@ -385,7 +383,7 @@ int chesspeer::chessgame::playMove(std::string move_set){
     std::string end_square = move_set.substr(2,2);
     char piece = identifyPiece(start_square);
     bool match = false;
-    std::list<std::string> choices = _availableMoves(start_square, piece);
+    std::vector<std::string> choices = _availableMoves(start_square, piece);
     for(auto iter = choices.begin(); iter != choices.end(); iter++){
         if(*iter == end_square){
             match = true;
@@ -418,7 +416,7 @@ bool chesspeer::chessgame::_validCapture(const std::string move_set){
 }
 
 std::string chesspeer::chessgame::_findKing(char color){
-    std::shared_ptr<chesspeer::Movenode> temp_node = currentPosition;
+    int temp_node = currentPositionID;
     char piece;
     std::string square;
     if (color == 'b'){
@@ -430,13 +428,14 @@ std::string chesspeer::chessgame::_findKing(char color){
         square = "e1";
     }
 
+    // TODO: what is the value of int in uninitialized values of struct?
     // easiest way is to look at the moves played
-    while (temp_node->prevmove != nullptr){
-        if (temp_node->pgn_move_played.front() == 'K' && temp_node->color_to_move != color){
-            square = temp_node->move_played.substr(2, 2);
+    while (temp_node != 0){
+        if (gameTree[temp_node].pgn_move_played.front() == 'K' && gameTree[temp_node].color_to_move != color){
+            square = gameTree[temp_node].move_played.substr(2, 2);
             break;
         }
-        temp_node = temp_node->prevmove;
+        temp_node = gameTree[temp_node].prev_move_id;
     }
 
     // make sure that the king is where we think it is
@@ -471,53 +470,53 @@ void chesspeer::chessgame::_updateBoard(std::string move_set){
     else
         move_str.insert(0, std::string(1, piece));
     
-    std::shared_ptr<Movenode> added_movenode = std::make_shared<Movenode>();
+    Movenode added_movenode = Movenode();
     //*added_movenode = *currentPosition;
     
     // Update board
     board[int(start_square[1])-49][int(start_square[0])-97] = ' ';
-    added_movenode->captured_piece = board[int(end_square[1])-49][int(end_square[0])-97];
+    added_movenode.captured_piece = board[int(end_square[1])-49][int(end_square[0])-97];
     board[int(end_square[1])-49][int(end_square[0])-97] = piece;
     
     // Update game state
-    added_movenode->pgn_move_played = move_str;
-    added_movenode->move_played = move_set;
-    added_movenode->ply++;
-    added_movenode->captured_piece = identifyPiece(move_set.substr(2, 2));
+    added_movenode.pgn_move_played = move_str;
+    added_movenode.move_played = move_set;
+    added_movenode.ply++;
+    added_movenode.captured_piece = identifyPiece(move_set.substr(2, 2));
     
-    if (currentPosition->color_to_move == 'w'){
-        added_movenode->color_to_move = 'b';
+    if (gameTree[currentPositionID].color_to_move == 'w'){
+        added_movenode.color_to_move = 'b';
     }
     else{
-        added_movenode->color_to_move = 'w';
-        added_movenode->on_move++;
+        added_movenode.color_to_move = 'w';
+        added_movenode.on_move++;
     }
     
-    if (added_movenode->captured_piece != ' '){
-        added_movenode->plys_since_capture = 0;
+    if (added_movenode.captured_piece != ' '){
+        added_movenode.plys_since_capture = 0;
     }
     else{
-        added_movenode->plys_since_capture++;
+        added_movenode.plys_since_capture++;
     }
 
-    added_movenode->black_castle_queenside = currentPosition->black_castle_queenside;
-    added_movenode->black_castle_kingside = currentPosition->black_castle_kingside;
-    added_movenode->white_castle_queenside = currentPosition->white_castle_queenside;
-    added_movenode->white_castle_kingside = currentPosition->white_castle_kingside;
+    added_movenode.black_castle_queenside = gameTree[currentPositionID].black_castle_queenside;
+    added_movenode.black_castle_kingside = gameTree[currentPositionID].black_castle_kingside;
+    added_movenode.white_castle_queenside = gameTree[currentPositionID].white_castle_queenside;
+    added_movenode.white_castle_kingside = gameTree[currentPositionID].white_castle_kingside;
    
     // Make sure to update en passant square
     if (piece == 'p' || piece == 'P'){
         if (start_square[0] == end_square[0] && int(start_square[1])-int(end_square[1]) > 1){
-            added_movenode->en_passant = start_square;
+            added_movenode.en_passant = start_square;
             // make sure en_passant square is behind the pawn
-            added_movenode->en_passant[1] += (int(end_square[1]) - int(start_square[1])) / 2;
+            added_movenode.en_passant[1] += (int(end_square[1]) - int(start_square[1])) / 2;
         }
     }
     else if (piece == 'k' || piece == 'K'){
-        added_movenode->black_castle_queenside = false;
-        added_movenode->black_castle_kingside = false;
-        added_movenode->white_castle_queenside = false;
-        added_movenode->white_castle_kingside = false;
+        added_movenode.black_castle_queenside = false;
+        added_movenode.black_castle_kingside = false;
+        added_movenode.white_castle_queenside = false;
+        added_movenode.white_castle_kingside = false;
         // handle moving the rook if this is castles
         if ((int(end_square[0]) - int(start_square[0]) == 2) && piece == 'K'){
             board[0][7] = ' ';
@@ -538,18 +537,18 @@ void chesspeer::chessgame::_updateBoard(std::string move_set){
     }
     else if (piece == 'r' || piece == 'R'){
         if (piece == 'R' && start_square == "a1")
-            added_movenode->white_castle_queenside = false;
+            added_movenode.white_castle_queenside = false;
         if (piece == 'R' && start_square == "h1")
-            added_movenode->white_castle_kingside = false;
+            added_movenode.white_castle_kingside = false;
         if (piece == 'r' && start_square == "a8")
-            added_movenode->black_castle_queenside = false;
+            added_movenode.black_castle_queenside = false;
         if (piece == 'r' && start_square == "h8")
-            added_movenode->black_castle_queenside = false;
+            added_movenode.black_castle_queenside = false;
     }
-    added_movenode->prevmove = currentPosition;
+    added_movenode.prev_move_id = currentPositionID;
 
-    currentPosition->sidelines.push_back(added_movenode);
-    currentPosition = added_movenode;
+    gameTree[currentPositionID].sidelines.push_back(added_movenode);
+    currentPositionID = gameTree.size() - 1;
 
     return; 
 }
