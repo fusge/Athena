@@ -15,10 +15,9 @@ int main(int argc, char *argv[]){
     auto mychessboard = chesspeer::chessgame();
     std::string moves;
     while(true){
-        std::cout << "Enter a move: ";
+        std::cout << "Enter a square: ";
         std::cin >> moves;
-        mychessboard.playMove(moves);
-        mychessboard.show(false);
+        mychessboard.showPossibleMoves(moves);
     }
     mychessboard.show(false);
     //std::cout << mychessboard.getFen() << std::endl;

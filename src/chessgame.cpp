@@ -195,8 +195,9 @@ void chesspeer::chessgame::_drawLine(std::shared_ptr<std::list<std::string> > co
     new_coord.push_back(char(coordinates->back()[0] + direction.first));
     new_coord.push_back(char(coordinates->back()[1] + direction.second));
     coordinates->push_back(new_coord);
+    std::cout << new_coord << " " << board[row+direction.second][col+direction.first] << '\n';
     if (iterate == false) return;
-    if (this->board[row+direction.second][col+direction.first] != ' ') return;
+    if (board[row][col] != ' ') return;
     else this->_drawLine(coordinates, direction, iterate);
 }
 
@@ -227,9 +228,32 @@ std::list<std::string> chesspeer::chessgame::_availableMoves(std::string square,
                 coordinates->push_back(square);
                 // only find first squares
                 _drawLine(coordinates, std::make_pair(stepcol, steprow), false);
-                // Castling is so complex it will be dealt at higher level
-                // using the state information from chessgame class.
                 result.splice(result.end(), *coordinates);
+            }
+        }
+        // Handle castles
+        if (piece == 'K' && square == "e1"){
+            if (currentPosition->white_castle_kingside && board[0][5] == ' ' && board[0][6] == ' '){
+                square[0] += 2;
+                result.push_back(square);
+                square[0] -= 2;
+            }
+            if (currentPosition->white_castle_queenside && board[0][3] == ' ' && board[0][2] == ' '){
+                square[0] -= 2;
+                result.push_back(square);
+                square[0] += 2;
+            }
+        }
+        if (piece == 'k' && square == "e8"){
+            if (currentPosition->black_castle_kingside && board[0][5] == ' ' && board[0][6] == ' '){
+                square[0] += 2;
+                result.push_back(square);
+                square[0] -= 2;
+            }
+            if (currentPosition->black_castle_queenside && board[0][3] == ' ' && board[0][2] == ' '){
+                square[0] -= 2;
+                result.push_back(square);
+                square[0] += 2;
             }
         }
     }
@@ -265,9 +289,10 @@ std::list<std::string> chesspeer::chessgame::_availableMoves(std::string square,
         for (int steprow = -1; steprow <= 1; steprow++) {
             for (int stepcol = -1; stepcol <= 1; stepcol++) {
                 // pawns don't move backwards or sidways. they can only move 
-                // diagonally for capture and en_passant moves. those complex
-                // rules are dealt with at higher logic level. We only want
-                // the possible squares to move to.
+                // diagonally for capture and en_passant moves. En passant 
+                // rules are dealt with at higher logic level. Here we
+                // are just returning all possible moves regardless of
+                // capture or en_passant status.
                 if (steprow == 0) continue;
                 else if (piece == 'p' && steprow > 0) continue;
                 else if (piece == 'P' && steprow < 0) continue;
@@ -356,12 +381,12 @@ int chesspeer::chessgame::playMove(std::string move_set){
         std::cout << "e.g. e4 -> e2e4" << std::endl;
         return 1;
     }
-    
     // get source and destination strings and check for available moves
     std::string start_square = move_set.substr(0,2);
     std::string end_square = move_set.substr(2,2);
+    char piece = identifyPiece(start_square);
     bool match = false;
-    std::list<std::string> choices = _availableMoves(start_square, identifyPiece(start_square));
+    std::list<std::string> choices = _availableMoves(start_square, piece);
     for(auto iter = choices.begin(); iter != choices.end(); iter++){
         if(*iter == end_square){
             match = true;
@@ -379,7 +404,16 @@ int chesspeer::chessgame::playMove(std::string move_set){
 bool chesspeer::chessgame::_validCapture(const std::string move_set){
     char piece = identifyPiece(move_set.substr(0, 2));
     char captured_piece = identifyPiece(move_set.substr(2, 2));
-    if ((int(piece)-int(captured_piece)) > 8) return true;
+    // Pawns are the only piece that changes it's move based on captures.
+    if (piece == 'p' || piece == 'P'){
+        if (captured_piece == ' ' && 
+            move_set.substr(0, 2)[0] == move_set.substr(2, 2)[0] &&
+            (int(piece)-int(captured_piece)) > 8) return true;
+        else if (captured_piece != ' ' && 
+            move_set.substr(0, 2)[1] != move_set.substr(2, 2)[1]) return true;
+        else return false;
+    }
+    else if ((int(piece)-int(captured_piece)) > 8) return true;
     else if(captured_piece == ' ') return true;
     else return false;
 }
@@ -397,12 +431,25 @@ std::string chesspeer::chessgame::_findKing(char color){
         square = "e1";
     }
 
+    // easiest way is to look at the moves played
     while (temp_node->prevmove != nullptr){
         if (temp_node->pgn_move_played.front() == 'K' && temp_node->color_to_move != color){
             square = temp_node->move_played.substr(2, 2);
             break;
         }
         temp_node = temp_node->prevmove;
+    }
+
+    // make sure that the king is where we think it is
+    if (identifyPiece(square) != piece){
+        for (int row = 0; row < 8; row++){
+            for (int col = 0; col < 8; col++){
+                if (board[row][col] == piece){
+                    square[0] = char(col+97);
+                    square[1] = char(row+49);
+                }
+            }
+        }
     }
     return square;
 }
@@ -453,14 +500,55 @@ void chesspeer::chessgame::_updateBoard(std::string move_set){
     else{
         added_movenode->plys_since_capture++;
     }
-    
-    added_movenode->prevmove = currentPosition;
 
     added_movenode->black_castle_queenside = currentPosition->black_castle_queenside;
     added_movenode->black_castle_kingside = currentPosition->black_castle_kingside;
     added_movenode->white_castle_queenside = currentPosition->white_castle_queenside;
     added_movenode->white_castle_kingside = currentPosition->white_castle_kingside;
- 
+   
+    // Make sure to update en passant square
+    if (piece == 'p' || piece == 'P'){
+        if (start_square[0] == end_square[0] && int(start_square[1])-int(end_square[1]) > 1){
+            added_movenode->en_passant = start_square;
+            // make sure en_passant square is behind the pawn
+            added_movenode->en_passant[1] += (int(end_square[1]) - int(start_square[1])) / 2;
+        }
+    }
+    else if (piece == 'k' || piece == 'K'){
+        added_movenode->black_castle_queenside = false;
+        added_movenode->black_castle_kingside = false;
+        added_movenode->white_castle_queenside = false;
+        added_movenode->white_castle_kingside = false;
+        // handle moving the rook if this is castles
+        if ((int(end_square[0]) - int(start_square[0]) == 2) && piece == 'K'){
+            board[0][7] = ' ';
+            board[0][5] = 'R';
+        }
+        else if ((int(end_square[0]) - int(start_square[0]) == -2) && piece == 'K'){
+            board[0][0] = ' ';
+            board[0][3] = 'R';
+        }
+        else if ((int(end_square[0]) - int(start_square[0]) == 2) && piece == 'k'){
+            board[7][7] = ' ';
+            board[7][5] = 'r';
+        }
+        else if ((int(end_square[0]) - int(start_square[0]) == -2) && piece == 'k'){
+            board[7][0] = ' ';
+            board[7][3] = 'r';
+        }
+    }
+    else if (piece == 'r' || piece == 'R'){
+        if (piece == 'R' && start_square == "a1")
+            added_movenode->white_castle_queenside = false;
+        if (piece == 'R' && start_square == "h1")
+            added_movenode->white_castle_kingside = false;
+        if (piece == 'r' && start_square == "a8")
+            added_movenode->black_castle_queenside = false;
+        if (piece == 'r' && start_square == "h8")
+            added_movenode->black_castle_queenside = false;
+    }
+    added_movenode->prevmove = currentPosition;
+
     currentPosition->sidelines.push_back(added_movenode);
     currentPosition = added_movenode;
 
