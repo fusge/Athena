@@ -52,20 +52,22 @@ void chesspeer::chessgame::setBoard(std::string fen) {
     // Handle castling rights
     fen_iter++;
     while (*fen_iter != ' ') {
+        std::cout << *fen_iter << "\n";
         switch (*fen_iter) {
         case 'K': 
             gameNode.white_castle_kingside = true;
+            fen_iter++;
             break;
         case 'Q': 
             gameNode.white_castle_queenside = true;
+            fen_iter++;
             break;
         case 'k': 
             gameNode.black_castle_kingside = true;
+            fen_iter++;
             break;
         case 'q': 
             gameNode.black_castle_queenside = true;
-            break;
-        default: 
             fen_iter++;
             break;
         }
@@ -93,7 +95,7 @@ void chesspeer::chessgame::setBoard(std::string fen) {
     gameNode.on_move = std::stoi(std::string(fen_iter, fen.end()));
 
     gameTree.push_back(gameNode);
-    currentPositionID = gameTree.size() - 1;
+    currentPositionID = (int)gameTree.size() - 1;
 }
 
 void chesspeer::chessgame::show(bool flipped) {
@@ -486,9 +488,9 @@ void chesspeer::chessgame::_updateBoard(std::string move_set){
     //*added_movenode = *currentPosition;
     
     // Update board
-    board[int(start_square[1])-49][int(start_square[0])-97] = ' ';
-    added_movenode.captured_piece = board[int(end_square[1])-49][int(end_square[0])-97];
-    board[int(end_square[1])-49][int(end_square[0])-97] = piece;
+    board[int(start_square[1]) - 49][int(start_square[0]) - 97] = ' ';
+    added_movenode.captured_piece = board[int(end_square[1]) - 49][int(end_square[0]) - 97];
+    board[int(end_square[1]) - 49][int(end_square[0]) - 97] = piece;
     
     // Update game state
     added_movenode.pgn_move_played = move_str;
@@ -560,7 +562,7 @@ void chesspeer::chessgame::_updateBoard(std::string move_set){
     added_movenode.prev_move_id = currentPositionID;
 
     gameTree[currentPositionID].sidelines.push_back(added_movenode);
-    currentPositionID = gameTree.size() - 1;
+    currentPositionID = (int)gameTree.size() - 1;
 
     return; 
 }
