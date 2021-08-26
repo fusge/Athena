@@ -6,7 +6,7 @@
 #include "src/ChesspeerConfig.h"
 #include <iostream>
 
-int main(int argc, char *argv[]){
+int main(){
     std::cout << "Chesspeer VERSION " ;
     std::cout << CHESSPEER_VERSION_MAJOR << ".";
     std::cout << CHESSPEER_VERSION_MINOR << ".";

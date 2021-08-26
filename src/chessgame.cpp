@@ -14,7 +14,7 @@ chesspeer::chessgame::chessgame(std::string fen) {
     this->setBoard(fen);
 }
 
-chesspeer::chessgame::~chessgame(){};
+chesspeer::chessgame::~chessgame(){}
 
 void chesspeer::chessgame::setBoard(std::string fen) {
     for (int row = 0; row < 8; row++) {
@@ -53,11 +53,21 @@ void chesspeer::chessgame::setBoard(std::string fen) {
     fen_iter++;
     while (*fen_iter != ' ') {
         switch (*fen_iter) {
-        case 'K': gameNode.white_castle_kingside = true;
-        case 'Q': gameNode.white_castle_queenside = true;
-        case 'k': gameNode.black_castle_kingside = true;
-        case 'q': gameNode.black_castle_queenside = true;
-        default: fen_iter++;
+        case 'K': 
+            gameNode.white_castle_kingside = true;
+            break;
+        case 'Q': 
+            gameNode.white_castle_queenside = true;
+            break;
+        case 'k': 
+            gameNode.black_castle_kingside = true;
+            break;
+        case 'q': 
+            gameNode.black_castle_queenside = true;
+            break;
+        default: 
+            fen_iter++;
+            break;
         }
     }
 
@@ -453,10 +463,12 @@ std::string chesspeer::chessgame::_findKing(char color){
 }
 
 bool chesspeer::chessgame::_kingInCheck(std::string move_set, char color){
+    std::cout << move_set << " " << color << std::endl;
     return false;
 }
 
 bool chesspeer::chessgame::_checkPins(std::string move_set){
+    std::cout << move_set << std::endl;
     return false;
 }
 
