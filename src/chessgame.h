@@ -48,7 +48,7 @@ namespace chesspeer {
         chessgame(std::string fen);
         ~chessgame();
 
-        std::string getFen();
+        std::string getFEN();
         std::string getPGN();
         void setBoard(std::string fen);
         int playMove(std::string move_set);

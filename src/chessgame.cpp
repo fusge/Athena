@@ -143,7 +143,7 @@ void chesspeer::chessgame::show(bool flipped) {
     std::cout << "on move " << gameTree[currentPositionID].on_move << std::endl;
 }
 
-std::string chesspeer::chessgame::getFen() {
+std::string chesspeer::chessgame::getFEN() {
     std::string fen = "";
     int empty_squares = 0;
     for (int row = 7; row >= 0; row--){
@@ -441,7 +441,8 @@ std::string chesspeer::chessgame::_findKing(char color){
 
     // easiest way is to look at the moves played
     while (temp_node_id != 0){
-        if (gameTree[temp_node_id].pgn_move_played.front() == 'K' && gameTree[temp_node_id].color_to_move != color){
+        if (gameTree[temp_node_id].pgn_move_played.front() == 'K' && 
+            gameTree[temp_node_id].color_to_move != color){
             square = gameTree[temp_node_id].move_played.substr(2, 2);
             break;
         }
