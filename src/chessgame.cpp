@@ -52,7 +52,6 @@ void chesspeer::chessgame::setBoard(std::string fen) {
     // Handle castling rights
     fen_iter++;
     while (*fen_iter != ' ') {
-        std::cout << *fen_iter << "\n";
         switch (*fen_iter) {
         case 'K': 
             gameNode.white_castle_kingside = true;
@@ -428,7 +427,7 @@ bool chesspeer::chessgame::_validCapture(const std::string move_set){
 }
 
 std::string chesspeer::chessgame::_findKing(char color){
-    int temp_node = currentPositionID;
+    int temp_node_id = currentPositionID;
     char piece;
     std::string square;
     if (color == 'b'){
@@ -440,14 +439,13 @@ std::string chesspeer::chessgame::_findKing(char color){
         square = "e1";
     }
 
-    // TODO: what is the value of int in uninitialized values of struct?
     // easiest way is to look at the moves played
-    while (temp_node != 0){
-        if (gameTree[temp_node].pgn_move_played.front() == 'K' && gameTree[temp_node].color_to_move != color){
-            square = gameTree[temp_node].move_played.substr(2, 2);
+    while (temp_node_id != 0){
+        if (gameTree[temp_node_id].pgn_move_played.front() == 'K' && gameTree[temp_node_id].color_to_move != color){
+            square = gameTree[temp_node_id].move_played.substr(2, 2);
             break;
         }
-        temp_node = gameTree[temp_node].prev_move_id;
+        temp_node_id = gameTree[temp_node_id].prev_move_id;
     }
 
     // make sure that the king is where we think it is
@@ -484,8 +482,7 @@ void chesspeer::chessgame::_updateBoard(std::string move_set){
     else
         move_str.insert(0, std::string(1, piece));
     
-    Movenode added_movenode = Movenode();
-    //*added_movenode = *currentPosition;
+    Movenode added_movenode = gameTree[currentPositionID];
     
     // Update board
     board[int(start_square[1]) - 49][int(start_square[0]) - 97] = ' ';
@@ -497,14 +494,8 @@ void chesspeer::chessgame::_updateBoard(std::string move_set){
     added_movenode.move_played = move_set;
     added_movenode.ply++;
     added_movenode.captured_piece = identifyPiece(move_set.substr(2, 2));
-    
-    if (gameTree[currentPositionID].color_to_move == 'w'){
-        added_movenode.color_to_move = 'b';
-    }
-    else{
-        added_movenode.color_to_move = 'w';
-        added_movenode.on_move++;
-    }
+    added_movenode.on_move = (added_movenode.ply / 2) + 1;
+    added_movenode.color_to_move = (added_movenode.ply % 2 == 0) ? 'w' : 'b';
     
     if (added_movenode.captured_piece != ' '){
         added_movenode.plys_since_capture = 0;
@@ -561,8 +552,45 @@ void chesspeer::chessgame::_updateBoard(std::string move_set){
     }
     added_movenode.prev_move_id = currentPositionID;
 
-    gameTree[currentPositionID].sidelines.push_back(added_movenode);
-    currentPositionID = (int)gameTree.size() - 1;
+    // We shoudl find an available slot if there is one. else append.
+    int newPositionID = _findAvailableTreeID();
+    if (newPositionID == 0){
+        gameTree.push_back(added_movenode);
+        gameTree[currentPositionID].sidelines.push_back(currentPositionID+1);
+        currentPositionID = (unsigned int)gameTree.size() - 1;
+    }
+    else{
+        gameTree[newPositionID] = added_movenode;
+        gameTree[currentPositionID].sidelines.push_back(newPositionID);
+        currentPositionID = newPositionID;
+    }
 
     return; 
+}
+
+int chesspeer::chessgame::_findAvailableTreeID(){
+    unsigned int result = 0;
+    for(unsigned int tree_id = 1; tree_id < gameTree.size(); tree_id++){
+        if (!gameTree[tree_id].linked){
+            result = tree_id;
+            break;
+        }
+    }
+    return result;
+}
+
+std::string chesspeer::chessgame::getPGN(){
+    std::string pgn = "";
+    unsigned int position_id = 0;
+    while(true){
+        if (gameTree[position_id].color_to_move == 'w'){
+            pgn.push_back(char(gameTree[position_id].on_move + 48));
+            pgn += ". ";
+        }
+        pgn += gameTree[position_id].pgn_move_played;
+        pgn += " ";
+        if (gameTree[position_id].sidelines.size() == 0) break;
+        position_id = gameTree[position_id].sidelines[0];
+    }
+    return pgn;
 }
