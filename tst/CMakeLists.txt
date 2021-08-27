@@ -12,15 +12,24 @@ else()
 endif()
 
 set(BINARY ${PROJECT_NAME}Tests)
-set(SOURCES ${PROJECT_NAME}Tests.cpp)
+set(SOURCES ${PROJECT_NAME}Tests.cpp 
+            ${PROJECT_SOURCE_DIR}/src/chessgame.h 
+            ${PROJECT_SOURCE_DIR}/src/chessgame.cpp
+)
 
+enable_testing()
 # Add source to this project's executable.
 add_executable (${BINARY}
     ${SOURCES})
 
-target_include_directories(${PROJECT_NAME} 
-    PUBLIC ${PROJECT_BINARY_DIR}/lib/googletest/include
+target_include_directories(${PROJECT_NAME}Tests
+    PUBLIC "${PROJECT_BINARY_DIR}/lib/googletest/include"
+    PRIVATE ${PROJECT_SOURCE_DIR}
 )
 
+target_link_libraries(${BINARY} PUBLIC gtest_main)
 
-target_link_libraries(${BINARY} PUBLIC gtest gtest_main)
+add_test(
+    NAME ${BINARY}
+    COMMAND ${BINARY}
+)

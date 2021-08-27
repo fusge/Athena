@@ -1,4 +1,5 @@
 #include "gtest/gtest.h"
+#include "src/chessgame.h"
 
 int main(){
     ::testing::InitGoogleTest();
