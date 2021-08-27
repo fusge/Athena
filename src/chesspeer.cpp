@@ -6,7 +6,7 @@
 #include "src/ChesspeerConfig.h"
 #include <iostream>
 
-int main(){
+int main() {
     std::cout << "Chesspeer VERSION " ;
     std::cout << CHESSPEER_VERSION_MAJOR << ".";
     std::cout << CHESSPEER_VERSION_MINOR << ".";
@@ -14,7 +14,7 @@ int main(){
 
     auto mychessboard = chesspeer::chessgame();
     std::string moves;
-    while(true){
+    while(true) {
         std::cout << "Enter a move: ";
         std::cin >> moves;
         mychessboard.playMove(moves);

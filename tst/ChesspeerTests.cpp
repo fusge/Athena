@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include "src/chessgame.h"
 
-int main(){
+int main() {
     ::testing::InitGoogleTest();
     return RUN_ALL_TESTS();
 }
