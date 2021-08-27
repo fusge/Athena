@@ -427,7 +427,7 @@ bool chesspeer::chessgame::_validCapture(const std::string move_set){
 }
 
 std::string chesspeer::chessgame::_findKing(char color){
-    int temp_node_id = currentPositionID;
+    unsigned int temp_node_id = currentPositionID;
     char piece;
     std::string square;
     if (color == 'b'){
@@ -477,11 +477,16 @@ void chesspeer::chessgame::_updateBoard(std::string move_set){
     std::string start_square = move_set.substr(0, 2);
     std::string end_square = move_set.substr(2, 2);
     std::string move_str = move_set.substr(2, 2);
-    if(int(piece) > 96)
-        move_str.insert(0, std::string(1, piece-32));
-    else
-        move_str.insert(0, std::string(1, piece));
-    
+    char pgn_piece;
+    if(int(piece) > 96){
+        pgn_piece = piece - 32;
+    }
+    else{
+        pgn_piece = piece;
+    } 
+    if (pgn_piece != 'P')
+        move_str.insert(0, std::string(1, pgn_piece));
+
     Movenode added_movenode = gameTree[currentPositionID];
     
     // Update board
@@ -583,14 +588,15 @@ std::string chesspeer::chessgame::getPGN(){
     std::string pgn = "";
     unsigned int position_id = 0;
     while(true){
-        if (gameTree[position_id].color_to_move == 'w'){
-            pgn.push_back(char(gameTree[position_id].on_move + 48));
-            pgn += ". ";
-        }
+        
         pgn += gameTree[position_id].pgn_move_played;
         pgn += " ";
         if (gameTree[position_id].sidelines.size() == 0) break;
         position_id = gameTree[position_id].sidelines[0];
+        if (gameTree[position_id].color_to_move == 'b'){
+            pgn.push_back(char(gameTree[position_id].on_move + 48));
+            pgn += ".";
+        }
     }
     return pgn;
 }
