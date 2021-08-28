@@ -51,6 +51,7 @@ class chessgame {
     std::string getFEN();
     std::string getPGN();
     void setBoard(std::string fen);
+    std::string generateMovePGN(std::string move_set);
     int playMove(std::string move_set);
     char identifyPiece(std::string square);
 

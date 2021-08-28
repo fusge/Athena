@@ -468,16 +468,9 @@ void chesspeer::chessgame::_updateBoard(std::string move_set) {
     std::string start_square = move_set.substr(0, 2);
     std::string end_square = move_set.substr(2, 2);
     std::string move_str = move_set.substr(2, 2);
-    char pgn_piece;
-    if(int(piece) > 96) {
-        pgn_piece = piece - 32;
-    } else {
-        pgn_piece = piece;
-    }
-    if (pgn_piece != 'P')
-        move_str.insert(0, std::string(1, pgn_piece));
-
     Movenode added_movenode = gameTree[currentPositionID];
+    added_movenode.captured_piece = identifyPiece(move_set.substr(2, 2));
+    
 
     // Update board
     board[int(start_square[1]) - 49][int(start_square[0]) - 97] = ' ';
@@ -488,7 +481,6 @@ void chesspeer::chessgame::_updateBoard(std::string move_set) {
     added_movenode.pgn_move_played = move_str;
     added_movenode.move_played = move_set;
     added_movenode.ply++;
-    added_movenode.captured_piece = identifyPiece(move_set.substr(2, 2));
     added_movenode.on_move = (added_movenode.ply / 2) + 1;
     added_movenode.color_to_move = (added_movenode.ply % 2 == 0) ? 'w' : 'b';
 
@@ -582,4 +574,58 @@ std::string chesspeer::chessgame::getPGN() {
         }
     }
     return pgn;
+}
+
+std::string chesspeer::chessgame::generateMovePGN(std::string move_set) {
+    std::string result = "";
+    std::string start_square = move_set.substr(0, 2);
+    std::string end_square = move_set.substr(2, 2);
+    char piece = identifyPiece(start_square);
+    
+    // Start forming the string
+    char pgn_piece;
+    if(int(piece) > 96) {
+        pgn_piece = piece - 32;
+    } else {
+        pgn_piece = piece;
+    }
+
+    // once again pawns are special
+    if (pgn_piece != 'P') result += pgn_piece;
+    
+    // The idea now is to reverse engineer all squares where the 
+    // piece can come from. This is to deal with cases where we
+    // have ambiguity (more than one piece can land on that square)
+    std::vector<std::string> available_moves; 
+    std::vector<std::string> ambiguous_moves;
+    if (piece == 'P') available_moves = _availableMoves(end_square, 'p');
+    else if (piece == 'p') available_moves =_availableMoves(end_square, 'P');
+    else available_moves = _availableMoves(end_square, piece);
+    int count = 0;
+    for (auto iter = available_moves.begin(); iter != available_moves.end(); iter++) {
+        if (identifyPiece(*iter) == piece) {
+            count++;    
+            ambiguous_moves.push_back(*iter);
+        }
+    }
+    // add disambiguation symbols
+    if (count > 1) {
+        bool diff_row = false;
+        bool diff_col = false;
+        for (auto iter = ambiguous_moves.begin(); iter != ambiguous_moves.end(); iter++) {
+            if (start_square != *iter) {
+                diff_row = (start_square[1] != (*iter)[1]); 
+                diff_col = (start_square[0] != (*iter)[0]);
+            }
+        }
+        if (diff_col) result += start_square[0];
+        if (diff_row) result += start_square[1];
+    }
+
+    // Add captures symbol
+    if (identifyPiece(end_square) != ' ') result += 'x';
+
+    result += end_square;
+
+    return result; 
 }
