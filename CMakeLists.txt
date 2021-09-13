@@ -10,7 +10,6 @@ add_subdirectory("lib")
 add_subdirectory("src")
 add_subdirectory("tst")
 
-
 # windows users might have a hard time running tests
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
@@ -22,5 +21,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 configure_file(${PROJECT_SOURCE_DIR}/src/ChesspeerConfig.h.in 
     ${PROJECT_BINARY_DIR}/src/ChesspeerConfig.h)
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR})
-# target_link_directories(${PROJECT_NAME} PUBLIC tst/)
+target_include_directories(${PROJECT_NAME} 
+    PRIVATE ${PROJECT_SOURCE_DIR}
+)
+
+target_link_libraries(${PROJECT_NAME} 
+    wx::net
+    wx::core
+    wx::base
+)
+
+

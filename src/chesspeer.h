@@ -4,5 +4,6 @@
 #pragma once
 
 #include <iostream>
+#include "chessgame.h"
 
 // TODO: Reference additional headers your program requires here.

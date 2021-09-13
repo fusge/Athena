@@ -1,10 +1,10 @@
 // chesspeer.cpp : Defines the entry point for the application.
 //
 
-//#include "chesspeer.h"
-#include "chessgame.h"
-#include "src/ChesspeerConfig.h"
+#include "chesspeer.h"
 #include <iostream>
+#include "src/ChesspeerConfig.h"
+#include "wx/window.h"
 
 int main() {
     std::cout << "Chesspeer VERSION " ;
