@@ -1,6 +1,10 @@
 #ifndef main_window_h
 #define main_window_h
 
+//#ifdef _WIN32
+//#define WXUSINGDLL
+//#endif
+
 #include "wx/wx.h"
 
 namespace UI
