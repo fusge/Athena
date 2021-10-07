@@ -13,12 +13,12 @@ enum
 
 bool UI::MainWindow::OnInit()
 {
-    UI::ChessBoard *frame = new UI::ChessBoard();
+    UI::cpFrame *frame = new UI::cpFrame();
     frame->Show(true);
     return true;
 }
 
-UI::ChessBoard::ChessBoard()
+UI::cpFrame::cpFrame()
     : wxFrame(NULL, wxID_ANY, "Hello World")
 {
     wxMenu *menuFile = new wxMenu;
@@ -34,17 +34,17 @@ UI::ChessBoard::ChessBoard()
     SetMenuBar( menuBar );
     CreateStatusBar();
     SetStatusText("Welcome to wxWidgets!");
-    Bind(wxEVT_MENU, &UI::ChessBoard::OnHello, this, ID_Hello);
-    Bind(wxEVT_MENU, &UI::ChessBoard::OnAbout, this, wxID_ABOUT);
-    Bind(wxEVT_MENU, &UI::ChessBoard::OnExit, this, wxID_EXIT);
+    Bind(wxEVT_MENU, &UI::cpFrame::OnHello, this, ID_Hello);
+    Bind(wxEVT_MENU, &UI::cpFrame::OnAbout, this, wxID_ABOUT);
+    Bind(wxEVT_MENU, &UI::cpFrame::OnExit, this, wxID_EXIT);
 }
 
-void UI::ChessBoard::OnExit(wxCommandEvent& event)
+void UI::cpFrame::OnExit(wxCommandEvent& event)
 {
     Close(true);
 }
 
-void UI::ChessBoard::OnAbout(wxCommandEvent& event)
+void UI::cpFrame::OnAbout(wxCommandEvent& event)
 {
     std::string version = "Chesspeer version ";
     version += std::to_string(CHESSPEER_VERSION_MAJOR);
@@ -57,7 +57,7 @@ void UI::ChessBoard::OnAbout(wxCommandEvent& event)
     wxMessageBox(message , "About Chesspeer", wxOK | wxICON_INFORMATION);
 }
 
-void UI::ChessBoard::OnHello(wxCommandEvent& event)
+void UI::cpFrame::OnHello(wxCommandEvent& event)
 {
     wxLogMessage("Chesspeer UI loadded");
 }

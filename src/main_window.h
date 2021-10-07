@@ -15,10 +15,10 @@ namespace UI
         virtual bool OnInit();
     };
 
-    class ChessBoard : public wxFrame
+    class cpFrame : public wxFrame
     {
     public:
-        ChessBoard();
+        cpFrame();
     private:
         void OnHello(wxCommandEvent& event);
         void OnExit(wxCommandEvent& event);
