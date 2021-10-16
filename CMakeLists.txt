@@ -9,6 +9,7 @@ project ("Chesspeer" VERSION 0.1.0 LANGUAGES CXX)
 add_subdirectory("lib")
 add_subdirectory("src")
 add_subdirectory("tst")
+add_subdirectory("data")
 
 # windows users might have a hard time running tests
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
