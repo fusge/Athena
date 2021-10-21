@@ -40,16 +40,19 @@ UI::cpMainWindow::cpMainWindow()
     CreateStatusBar();
 
     // Create chessboard
+    wxSize boardsize(400, 400);
+    wxBoxSizer* panel_sizer = new wxBoxSizer(wxHORIZONTAL);
     this->board_image = new wxImage();
     this->board_panel_id = wxWindow::NewControlId(1);
+
     this->board_panel = new wxPanel(this, board_panel_id, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, "Chessboard");
+    panel_sizer->Add(board_panel);
+    this->SetSizer(panel_sizer);
     this->loadImages();
     wxBitmap* cpBoardBitmap = new wxBitmap(*board_image, wxBITMAP_SCREEN_DEPTH);
-    wxStaticBitmap* static_bitmap = new wxStaticBitmap(this, this->board_panel_id, *cpBoardBitmap, wxDefaultPosition, wxDefaultSize, 0, "Chessboard Bitmap");
-    //wxClientDC* dc = new wxClientDC(board_panel);
-    //dc->DrawBitmap(*cpBoardBitmap, wxPoint(0, 0), false);
-    //cpBoard = new wxGrid(this, wxID_ANY, wxPoint(0, 0), wxSize(400, 400));
-    //cpBoard->CreateGrid(8, 8);
+    
+    wxStaticBitmap* static_bitmap = new wxStaticBitmap(this, this->board_panel_id, *cpBoardBitmap, wxDefaultPosition, boardsize, 0, "Chessboard Bitmap");
+
 
  
     SetStatusText("Chesspeer loaded successfully!");
@@ -97,6 +100,5 @@ void UI::cpMainWindow::loadImages() {
         wxMessageBox("Unable to load file");
         return;
     }
-    message = "Board Image loaded";
-    SetStatusText(message);
+    this->board_image->Rescale(400, 400);
 }
