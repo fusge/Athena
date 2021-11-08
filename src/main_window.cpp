@@ -87,8 +87,7 @@ void UI::cpMainWindow::OnHello(wxCommandEvent& event)
 void UI::cpMainWindow::loadImages() {
     wxString message("Loading board image in directory ");
     wxImage::AddHandler(new wxPNGHandler);
-    wxFileName img_path = wxFileName::DirName(wxGetCwd());
-    img_path.RemoveLastDir();
+    wxFileName img_path = wxFileName::DirName(CHESSPEER_BINARY_DIR);
     img_path.AppendDir("data");
     img_path.SetName("chessboard");
     img_path.SetExt("png");

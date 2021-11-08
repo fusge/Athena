@@ -19,11 +19,11 @@ install(TARGETS Chesspeer DESTINATION bin)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-configure_file(${PROJECT_SOURCE_DIR}/src/ChesspeerConfig.h.in 
-    ${PROJECT_BINARY_DIR}/src/ChesspeerConfig.h)
+configure_file(ChesspeerConfig.h.in 
+    ChesspeerConfig.h)
 
 target_include_directories(${PROJECT_NAME} 
-    PRIVATE ${PROJECT_SOURCE_DIR}
+    PUBLIC ${PROJECT_BINARY_DIR}
 )
 
 target_link_libraries(${PROJECT_NAME} 
