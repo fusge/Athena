@@ -12,13 +12,11 @@ if (MSVC)
     add_executable (${PROJECT_NAME} 
         WIN32
         "chessgame.h" "chessgame.cpp"
-        "main_window.cpp" "main_window.h"
-        "ChesspeerConfig.h")
+        "main_window.cpp" "main_window.h")
 else()
     add_executable (${PROJECT_NAME} 
         "chessgame.h" "chessgame.cpp"
-        "main_window.cpp" "main_window.h"
-        "ChesspeerConfig.h")
+        "main_window.cpp" "main_window.h")
 endif()
 
 
