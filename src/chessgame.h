@@ -28,8 +28,23 @@ struct Movenode {
     std::vector<int> sidelines;
 };
 
+enum Piece_t {
+    WHITE_PAWN = 'P',
+    WHITE_KNIGHT = 'N',
+    WHITE_BISHOP = 'B',
+    WHITE_ROOK = 'R',
+    WHITE_QUEEN = 'Q',
+    WHITE_KING = 'K',
+    BLACK_PAWN = 'p',
+    BLACK_KNIGHT = 'n',
+    BLACK_BISHOP = 'b',
+    BLACK_ROOK = 'r',
+    BLACK_QUEEN = 'q',
+    BLACK_KING = 'k',
+};
+
 class chessgame {
-  private:
+    private:
     std::array<std::array<char, 8>, 8> board;
     std::vector<Movenode> gameTree;
     unsigned int currentPositionID;
@@ -43,7 +58,7 @@ class chessgame {
     int _findAvailableTreeID();
     std::string _findKing(char color);
 
-  public:
+    public:
     chessgame();
     chessgame(std::string fen);
     ~chessgame();

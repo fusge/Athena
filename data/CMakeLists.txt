@@ -1,4 +1,15 @@
 cmake_minimum_required (VERSION 3.13)
 
 configure_file(chessboard.png ${CMAKE_CURRENT_BINARY_DIR}/chessboard.png COPYONLY)
-
+configure_file(b_bishop_png_128px.png ${CMAKE_CURRENT_BINARY_DIR}/b_bishop.png COPYONLY)
+configure_file(b_knight_png_128px.png ${CMAKE_CURRENT_BINARY_DIR}/b_knight.png COPYONLY)
+configure_file(b_rook_png_128px.png ${CMAKE_CURRENT_BINARY_DIR}/b_rook.png COPYONLY)
+configure_file(b_queen_png_128px.png ${CMAKE_CURRENT_BINARY_DIR}/b_queen.png COPYONLY)
+configure_file(b_king_png_128px.png ${CMAKE_CURRENT_BINARY_DIR}/b_king.png COPYONLY)
+configure_file(b_pawn_png_128px.png ${CMAKE_CURRENT_BINARY_DIR}/b_pawn.png COPYONLY)
+configure_file(w_pawn_png_128px.png ${CMAKE_CURRENT_BINARY_DIR}/w_pawn.png COPYONLY)
+configure_file(w_king_png_128px.png ${CMAKE_CURRENT_BINARY_DIR}/w_king.png COPYONLY)
+configure_file(w_queen_png_128px.png ${CMAKE_CURRENT_BINARY_DIR}/w_queen.png COPYONLY)
+configure_file(w_rook_png_128px.png ${CMAKE_CURRENT_BINARY_DIR}/w_rook.png COPYONLY)
+configure_file(w_knight_png_128px.png ${CMAKE_CURRENT_BINARY_DIR}/w_knight.png COPYONLY)
+configure_file(w_bishop_png_128px.png ${CMAKE_CURRENT_BINARY_DIR}/w_bishop.png COPYONLY)

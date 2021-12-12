@@ -1,19 +1,23 @@
 #ifndef main_window_h
 #define main_window_h
 
-//#ifdef _WIN32
-//#define WXUSINGDLL
-//#endif
+#include <array>
+#include <string>
 
-#include "wx/wx.h"
-#include "wx/generic/grid.h"
+#include <wx/wx.h>
+#include <wx/generic/grid.h>
+#include <wx/filename.h>
+
+#include "chessgame.h"
 
 namespace UI
 {
-    enum
-    {
-        ID_Hello = 1,
-        ID_BoardResize = 2
+
+    struct imageInfo{
+        std::string name;
+        std::string color;
+        wxFileName filename;
+        wxImage *image;
     };
 
     class Chesspeer : public wxApp
@@ -27,13 +31,13 @@ namespace UI
     public:
         cpBoardPanel(wxWindow * win, wxWindowID id): wxPanel(win, id)
         {
-            this->loadBoardImage(); 
+            this->loadImages(); 
             Bind(wxEVT_SIZE, &UI::cpBoardPanel::onBoardPanelResize, this);
             Bind(wxEVT_ERASE_BACKGROUND, &UI::cpBoardPanel::clearBackground, this);
             Bind(wxEVT_PAINT, &UI::cpBoardPanel::paintEventHandler, this);
         }
         
-        void loadBoardImage();
+        void loadImages();
         void render(wxDC &dc);
         void paintNow();
 
@@ -42,9 +46,12 @@ namespace UI
         void clearBackground(wxEraseEvent &event);
         void onBoardPanelResize(wxSizeEvent &event);
 
+        //std::array<std::string *, 12> filenames;
+
     private:
+        // Piece and board images
         wxImage* board_image;
-        wxBitmap* cpBoardBitmap;
+        std::array<imageInfo, 12> piece_images;
     };
 
     class cpMainWindow : public wxFrame
@@ -54,20 +61,14 @@ namespace UI
         
         void loadImages();
        
-        // Initialize event system
-
     private:
         // we have to manage window ids
         wxWindowID board_panel_id;
-
-        // Piece and board images
-        std::array<wxImage, 12>* piece_images;
 
         // window parts
         wxPanel* window_panel;
         UI::cpBoardPanel* board_panel;
 
-        void OnHello(wxCommandEvent& event);
         void OnExit(wxCommandEvent& event);
         void OnAbout(wxCommandEvent& event);
     };

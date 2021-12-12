@@ -19,13 +19,11 @@ bool UI::Chesspeer::OnInit()
 }
 
 UI::cpMainWindow::cpMainWindow()
-    : wxFrame(NULL, wxID_ANY, "Chesspeer")
+    : wxFrame(NULL, wxID_ANY, "Chesspeer", wxDefaultPosition, wxSize(600,600))
 {
     // Load the menu bar
     wxMenu *menuFile = new wxMenu;
-    menuFile->Append(UI::ID_Hello, "&Hello...\tCtrl-H",
-                     "Help string shown in status bar for this menu item");
-    menuFile->AppendSeparator();
+    //menuFile->AppendSeparator();
     menuFile->Append(wxID_EXIT);
     wxMenu *menuHelp = new wxMenu;
     menuHelp->Append(wxID_ABOUT);
@@ -45,7 +43,6 @@ UI::cpMainWindow::cpMainWindow()
     window_panel->SetBackgroundColour(wxColour("#4f5049"));
 
     // Create chessboard panel
-    //wxSize boardsize(400, 400);
     this->board_panel_id = wxWindow::NewControlId(1);
 
     this->board_panel = new cpBoardPanel(window_panel, board_panel_id);
@@ -54,28 +51,11 @@ UI::cpMainWindow::cpMainWindow()
     board_panel_sizer->Add(board_panel, 1, wxEXPAND | wxALL, 10);
     this->window_panel->SetSizer(board_panel_sizer);
 
-    // Start loading images and data
-    this->loadImages(); // Load all images from disk, including board and pieces
-    //cpBoardBitmap = new wxBitmap(*board_image, wxBITMAP_SCREEN_DEPTH);
-    //wxStaticBitmap* static_bitmap = new wxStaticBitmap(this->board_panel, 
-    //                                                   this->board_panel_id, 
-    //                                                   *cpBoardBitmap, 
-    //                                                   wxDefaultPosition, 
-    //                                                   wxDefaultSize, 
-    //                                                   0, 
-    //                                                   "Chessboard Bitmap");
-
     // Finish startup
     SetStatusText("Chesspeer loaded successfully!");
-    Bind(wxEVT_MENU, &UI::cpMainWindow::OnHello, this, UI::ID_Hello);
     Bind(wxEVT_MENU, &UI::cpMainWindow::OnAbout, this, wxID_ABOUT);
     Bind(wxEVT_MENU, &UI::cpMainWindow::OnExit, this, wxID_EXIT);
 }
-
-void UI::cpMainWindow::loadImages()
-{
-}
-
 
 void UI::cpMainWindow::OnExit(wxCommandEvent& event)
 {
@@ -95,12 +75,8 @@ void UI::cpMainWindow::OnAbout(wxCommandEvent& event)
     wxMessageBox(message , "About Chesspeer", wxOK | wxICON_INFORMATION);
 }
 
-void UI::cpMainWindow::OnHello(wxCommandEvent& event)
-{
-    wxLogMessage("Chesspeer UI loadded");
-}
-
-void UI::cpBoardPanel::loadBoardImage() {
+void UI::cpBoardPanel::loadImages() {
+    // load chessboard image 
     wxString message("Loading board image in directory ");
     wxImage::AddHandler(new wxPNGHandler);
     wxFileName img_path = wxFileName::DirName(CHESSPEER_BINARY_DIR);
@@ -110,11 +86,37 @@ void UI::cpBoardPanel::loadBoardImage() {
     this->board_image = new wxImage();
     if (!this->board_image->LoadFile(img_path.GetFullPath(), wxBITMAP_TYPE_PNG, -1)) 
     {
-        message = "Unable to load Board image:\n ";
-        message.append(img_path.GetFullPath());
-        message.append("\n File missing?");
+        //message = "Unable to load Board image:\n ";
+        //message.append(img_path.GetFullPath());
+        //message.append("\n File missing?");
         wxMessageBox("Unable to load file");
-        return;
+    }
+
+    // Load piece images
+    std::array<std::string, 6> generalPieceNames = {"pawn", "rook", "bishop", "knight",
+                                                    "queen", "king"};
+    std::array<std::string, 2> colors = {"w", "b"};
+    std::string name;
+    std::array<imageInfo, 12>::iterator image_iter = piece_images.begin();
+    std::string filename;
+    wxFileName tempFilename;
+    for(auto name = generalPieceNames.begin(); name != generalPieceNames.end(); ++name)
+    {
+        for(auto color = colors.begin(); color != colors.end(); ++color)
+        {
+            image_iter->name = std::string(*name);
+            image_iter->color = *color;
+            filename = std::string(*color);
+            filename.append("_");
+            filename.append(*name);
+            tempFilename = wxFileName::DirName(CHESSPEER_BINARY_DIR);
+            tempFilename.AppendDir("data");
+            tempFilename.SetName(filename);
+            tempFilename.SetExt("png");
+            image_iter->image = new wxImage();
+            image_iter->image->LoadFile(tempFilename.GetFullPath(), wxBITMAP_TYPE_PNG, -1);
+            ++image_iter;
+        }
     }
 }
 
@@ -131,15 +133,6 @@ void UI::cpBoardPanel::render(wxDC &dc)
     auto minSize = (width < height) ? width : height; 
     wxImage tempImage = board_image->Scale(minSize, minSize);
     wxBitmap tempBitmap(tempImage);
-    //wxStaticBitmap* static_bitmap = new wxStaticBitmap(this, 
-    //                                                   this->GetId(), 
-    //                                                   *cpBoardBitmap, 
-    //                                                   wxDefaultPosition, 
-    //                                                   wxDefaultSize, 
-    //                                                   0, 
-    //                                                   "Chessboard Bitmap");
-    //this->Refresh();
-    //this->Update();
     dc.DrawBitmap(tempBitmap, 0, 0);
 }
 
