@@ -20,7 +20,7 @@ namespace UI
         wxImage *image;
     };
 
-    class Chesspeer : public wxApp
+    class Athena : public wxApp
     {
     public:
         virtual bool OnInit();
@@ -74,5 +74,5 @@ namespace UI
     };
 }
 
-wxIMPLEMENT_APP(UI::Chesspeer);
+wxIMPLEMENT_APP(UI::Athena);
 #endif /* main_window_h */

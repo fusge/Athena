@@ -1,4 +1,4 @@
-# CMakeList.txt : CMake project for chesspeer, include source and define
+# CMakeList.txt : CMake project for athena, include source and define
 # project specific logic here.
 #
 

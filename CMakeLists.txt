@@ -3,7 +3,7 @@
 #
 cmake_minimum_required (VERSION 3.13)
 
-project ("Chesspeer" VERSION 0.1.0 LANGUAGES CXX)
+project ("Athena" VERSION 0.1.0 LANGUAGES CXX)
 
 # Include sub-projects.
 add_subdirectory("lib")
@@ -15,12 +15,12 @@ add_subdirectory("data")
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
 # Installation targets
-install(TARGETS Chesspeer DESTINATION bin)
+install(TARGETS Athena DESTINATION bin)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-configure_file(ChesspeerConfig.h.in 
-    ChesspeerConfig.h)
+configure_file(AthenaConfig.h.in 
+    AthenaConfig.h)
 
 target_include_directories(${PROJECT_NAME} 
     PUBLIC ${PROJECT_BINARY_DIR}

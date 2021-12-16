@@ -9,7 +9,7 @@
 #include <utility>
 #include <memory>
 
-namespace chesspeer {
+namespace athena {
 struct Movenode {
     bool linked = true;
     int ply = 0;
@@ -74,6 +74,6 @@ class chessgame {
     void showPossibleMoves(std::string square);
 
 };
-} // End of chesspeer namespace
+} // End of athena namespace
 
 #endif

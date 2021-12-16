@@ -1,6 +1,6 @@
 #include "main_window.h"
 #include "chessgame.h"
-#include "ChesspeerConfig.h"
+#include "AthenaConfig.h"
 #include <string>
 #include <iostream>
 
@@ -11,7 +11,7 @@
 #include <wx/image.h>
 #include <wx/statbmp.h>
 
-bool UI::Chesspeer::OnInit()
+bool UI::Athena::OnInit()
 {
     UI::cpMainWindow *frame = new UI::cpMainWindow();
     frame->Show(true);
@@ -19,7 +19,7 @@ bool UI::Chesspeer::OnInit()
 }
 
 UI::cpMainWindow::cpMainWindow()
-    : wxFrame(NULL, wxID_ANY, "Chesspeer", wxDefaultPosition, wxSize(600,600))
+    : wxFrame(NULL, wxID_ANY, "Athena", wxDefaultPosition, wxSize(600,600))
 {
     // Load the menu bar
     wxMenu *menuFile = new wxMenu;
@@ -39,7 +39,7 @@ UI::cpMainWindow::cpMainWindow()
                                     wxDefaultPosition, 
                                     wxDefaultSize, 
                                     wxTAB_TRAVERSAL,
-                                    "chesspeer window");
+                                    "athena window");
     window_panel->SetBackgroundColour(wxColour("#4f5049"));
 
     // Create chessboard panel
@@ -52,7 +52,7 @@ UI::cpMainWindow::cpMainWindow()
     this->window_panel->SetSizer(board_panel_sizer);
 
     // Finish startup
-    SetStatusText("Chesspeer loaded successfully!");
+    SetStatusText("Athena loaded successfully!");
     Bind(wxEVT_MENU, &UI::cpMainWindow::OnAbout, this, wxID_ABOUT);
     Bind(wxEVT_MENU, &UI::cpMainWindow::OnExit, this, wxID_EXIT);
 }
@@ -64,22 +64,22 @@ void UI::cpMainWindow::OnExit(wxCommandEvent& event)
 
 void UI::cpMainWindow::OnAbout(wxCommandEvent& event)
 {
-    std::string version = "Chesspeer version ";
-    version += std::to_string(CHESSPEER_VERSION_MAJOR);
+    std::string version = "Athena version ";
+    version += std::to_string(ATHENA_VERSION_MAJOR);
     version += ".";
-    version += std::to_string(CHESSPEER_VERSION_MINOR);
+    version += std::to_string(ATHENA_VERSION_MINOR);
     version += ".";
-    version += std::to_string(CHESSPEER_VERSION_PATCH);
+    version += std::to_string(ATHENA_VERSION_PATCH);
     
     wxString message (version);
-    wxMessageBox(message , "About Chesspeer", wxOK | wxICON_INFORMATION);
+    wxMessageBox(message , "About Athena", wxOK | wxICON_INFORMATION);
 }
 
 void UI::cpBoardPanel::loadImages() {
     // load chessboard image 
     wxString message("Loading board image in directory ");
     wxImage::AddHandler(new wxPNGHandler);
-    wxFileName img_path = wxFileName::DirName(CHESSPEER_BINARY_DIR);
+    wxFileName img_path = wxFileName::DirName(ATHENA_BINARY_DIR);
     img_path.AppendDir("data");
     img_path.SetName("chessboard");
     img_path.SetExt("png");
@@ -109,7 +109,7 @@ void UI::cpBoardPanel::loadImages() {
             filename = std::string(*color);
             filename.append("_");
             filename.append(*name);
-            tempFilename = wxFileName::DirName(CHESSPEER_BINARY_DIR);
+            tempFilename = wxFileName::DirName(ATHENA_BINARY_DIR);
             tempFilename.AppendDir("data");
             tempFilename.SetName(filename);
             tempFilename.SetExt("png");
