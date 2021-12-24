@@ -1,3 +1,3 @@
 #!/bin/bash
 
-../build/debug/src/Chesspeer
+../build/debug/src/Athena

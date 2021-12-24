@@ -1,1 +1,1 @@
-..\build\debug\src\Release\Chesspeer.exe
+..\build\debug\src\Release\Athena.exe
