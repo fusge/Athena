@@ -3,6 +3,7 @@
 
 #include <array>
 #include <string>
+#include <memory>
 
 #include <wx/wx.h>
 #include <wx/generic/grid.h>
@@ -12,10 +13,8 @@
 
 namespace UI
 {
-
     struct imageInfo{
-        std::string name;
-        std::string color;
+        Core::Piece_t piece_type;
         wxFileName filename;
         wxImage *image;
     };
@@ -29,17 +28,11 @@ namespace UI
     class cpBoardPanel : public wxPanel
     {
     public:
-        cpBoardPanel(wxWindow * win, wxWindowID id): wxPanel(win, id)
-        {
-            this->loadImages(); 
-            Bind(wxEVT_SIZE, &UI::cpBoardPanel::onBoardPanelResize, this);
-            Bind(wxEVT_ERASE_BACKGROUND, &UI::cpBoardPanel::clearBackground, this);
-            Bind(wxEVT_PAINT, &UI::cpBoardPanel::paintEventHandler, this);
-        }
+        cpBoardPanel(wxWindow * win, wxWindowID id);
         
         void loadImages();
         void render(wxDC &dc);
-        void paintNow();
+        void paintNow(); 
 
         // Event Handler functions
         void paintEventHandler(wxPaintEvent &event);
@@ -52,6 +45,10 @@ namespace UI
         // Piece and board images
         wxImage* board_image;
         std::array<imageInfo, 12> piece_images;
+        std::array<wxPanel *, 64> board_squares;
+
+        // Game Core System
+        std::unique_ptr<Core::Chessgame> game_system;
     };
 
     class cpMainWindow : public wxFrame

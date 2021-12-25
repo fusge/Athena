@@ -5,18 +5,18 @@
 #include <cstdlib>
 #include <cmath>
 
-athena::chessgame::chessgame() {
+Core::Chessgame::Chessgame() {
     std::string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     this->setBoard(fen);
 }
 
-athena::chessgame::chessgame(std::string fen) {
+Core::Chessgame::Chessgame(std::string fen) {
     this->setBoard(fen);
 }
 
-athena::chessgame::~chessgame() {}
+Core::Chessgame::~Chessgame() {}
 
-void athena::chessgame::setBoard(std::string fen) {
+void Core::Chessgame::setBoard(std::string fen) {
     for (int row = 0; row < 8; row++) {
         this->board[row].fill(' ');
     }
@@ -95,7 +95,7 @@ void athena::chessgame::setBoard(std::string fen) {
     currentPositionID = (int)gameTree.size() - 1;
 }
 
-void athena::chessgame::show(bool flipped) {
+void Core::Chessgame::show(bool flipped) {
     if (!flipped) {
         for (int row = 7; row >= 0; row--) {
             std::cout << row+1 << " ";
@@ -137,7 +137,7 @@ void athena::chessgame::show(bool flipped) {
     std::cout << "on move " << gameTree[currentPositionID].on_move << std::endl;
 }
 
-std::string athena::chessgame::getFEN() {
+std::string Core::Chessgame::getFEN() {
     std::string fen = "";
     int empty_squares = 0;
     for (int row = 7; row >= 0; row--) {
@@ -188,7 +188,7 @@ std::string athena::chessgame::getFEN() {
     return fen;
 }
 
-void athena::chessgame::_drawLine(std::shared_ptr<std::vector<std::string> > coordinates,
+void Core::Chessgame::_drawLine(std::shared_ptr<std::vector<std::string> > coordinates,
                                      std::pair<int, int> direction,
                                      bool iterate) {
     int col = int(coordinates->back()[0]) - 97 + direction.first;
@@ -203,7 +203,7 @@ void athena::chessgame::_drawLine(std::shared_ptr<std::vector<std::string> > coo
     else _drawLine(coordinates, direction, iterate);
 }
 
-std::vector<std::string> athena::chessgame::_availableMoves(std::string square,
+std::vector<std::string> Core::Chessgame::_availableMoves(std::string square,
         char piece) {
     std::vector<std::string> result;
     std::shared_ptr<std::vector<std::string> > coordinates;
@@ -332,13 +332,13 @@ std::vector<std::string> athena::chessgame::_availableMoves(std::string square,
     return result;
 }
 
-char athena::chessgame::identifyPiece(std::string move) {
+char Core::Chessgame::identifyPiece(std::string move) {
     int col = int(move[0]) - 97;
     int row = int(move[1]) - 49;
     return this->board[row][col];
 }
 
-void athena::chessgame::showPossibleMoves(std::string square) {
+void Core::Chessgame::showPossibleMoves(std::string square) {
     char piece = identifyPiece(square);
     if (piece == ' ') {
         std::cout << "There is no piece there." << std::endl;
@@ -373,7 +373,7 @@ void athena::chessgame::showPossibleMoves(std::string square) {
     std::cout << std::endl;
 }
 
-int athena::chessgame::playMove(std::string move_set) {
+int Core::Chessgame::playMove(std::string move_set) {
     // Check that we are getting the right formatted string
     if (move_set.length() != 4) {
         std::cout << "Please enter move in the format: \n";
@@ -401,7 +401,7 @@ int athena::chessgame::playMove(std::string move_set) {
     return 0;
 }
 
-bool athena::chessgame::_validCapture(const std::string move_set) {
+bool Core::Chessgame::_validCapture(const std::string move_set) {
     char piece = identifyPiece(move_set.substr(0, 2));
     char captured_piece = identifyPiece(move_set.substr(2, 2));
     // Pawns are the only piece that changes it's move based on captures.
@@ -417,7 +417,7 @@ bool athena::chessgame::_validCapture(const std::string move_set) {
     else return false;
 }
 
-std::string athena::chessgame::_findKing(char color) {
+std::string Core::Chessgame::_findKing(char color) {
     unsigned int temp_node_id = currentPositionID;
     char piece;
     std::string square;
@@ -453,17 +453,17 @@ std::string athena::chessgame::_findKing(char color) {
     return square;
 }
 
-bool athena::chessgame::_kingInCheck(std::string move_set, char color) {
+bool Core::Chessgame::_kingInCheck(std::string move_set, char color) {
     std::cout << move_set << " " << color << std::endl;
     return false;
 }
 
-bool athena::chessgame::_checkPins(std::string move_set) {
+bool Core::Chessgame::_checkPins(std::string move_set) {
     std::cout << move_set << std::endl;
     return false;
 }
 
-void athena::chessgame::_updateBoard(std::string move_set) {
+void Core::Chessgame::_updateBoard(std::string move_set) {
     char piece = identifyPiece(move_set.substr(0, 2));
     std::string start_square = move_set.substr(0, 2);
     std::string end_square = move_set.substr(2, 2);
@@ -548,7 +548,7 @@ void athena::chessgame::_updateBoard(std::string move_set) {
     return;
 }
 
-int athena::chessgame::_findAvailableTreeID() {
+int Core::Chessgame::_findAvailableTreeID() {
     unsigned int result = 0;
     for(unsigned int tree_id = 1; tree_id < gameTree.size(); tree_id++) {
         if (!gameTree[tree_id].linked) {
@@ -559,7 +559,7 @@ int athena::chessgame::_findAvailableTreeID() {
     return result;
 }
 
-std::string athena::chessgame::getPGN() {
+std::string Core::Chessgame::getPGN() {
     std::string pgn = "";
     unsigned int position_id = 0;
     while(true) {
@@ -576,7 +576,7 @@ std::string athena::chessgame::getPGN() {
     return pgn;
 }
 
-std::string athena::chessgame::generateMovePGN(std::string move_set) {
+std::string Core::Chessgame::generateMovePGN(std::string move_set) {
     std::string result = "";
     std::string start_square = move_set.substr(0, 2);
     std::string end_square = move_set.substr(2, 2);

@@ -9,7 +9,7 @@
 #include <utility>
 #include <memory>
 
-namespace athena {
+namespace Core {
 struct Movenode {
     bool linked = true;
     int ply = 0;
@@ -41,9 +41,10 @@ enum Piece_t {
     BLACK_ROOK = 'r',
     BLACK_QUEEN = 'q',
     BLACK_KING = 'k',
+    EMPTY_SQUARE = ' '
 };
 
-class chessgame {
+class Chessgame {
     private:
     std::array<std::array<char, 8>, 8> board;
     std::vector<Movenode> gameTree;
@@ -59,9 +60,9 @@ class chessgame {
     std::string _findKing(char color);
 
     public:
-    chessgame();
-    chessgame(std::string fen);
-    ~chessgame();
+    Chessgame();
+    Chessgame(std::string fen);
+    ~Chessgame();
 
     std::string getFEN();
     std::string getPGN();
