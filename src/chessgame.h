@@ -70,11 +70,12 @@ class Chessgame {
     std::string generateMovePGN(std::string move_set);
     int playMove(std::string move_set);
     char identifyPiece(std::string square);
+    char identifyPiece(int index);
 
     void show(bool fliped);
     void showPossibleMoves(std::string square);
 
 };
-} // End of athena namespace
+} // End of Core namespace
 
 #endif

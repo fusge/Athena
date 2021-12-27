@@ -338,6 +338,12 @@ char Core::Chessgame::identifyPiece(std::string move) {
     return this->board[row][col];
 }
 
+char Core::Chessgame::identifyPiece(int index){
+    int row = index / 8;
+    int col = index % 8;
+    return this->board[row][col];
+}
+
 void Core::Chessgame::showPossibleMoves(std::string square) {
     char piece = identifyPiece(square);
     if (piece == ' ') {

@@ -19,6 +19,11 @@ namespace UI
         wxImage *image;
     };
 
+    struct boardSquare{
+        Core::Piece_t piece_type;
+        wxPanel *square_panel;
+    };
+
     class Athena : public wxApp
     {
     public:
@@ -45,7 +50,7 @@ namespace UI
         // Piece and board images
         wxImage* board_image;
         std::array<imageInfo, 12> piece_images;
-        std::array<wxPanel *, 64> board_squares;
+        std::array<UI::boardSquare, 64> board_squares;
 
         // Game Core System
         std::unique_ptr<Core::Chessgame> game_system;
@@ -56,8 +61,6 @@ namespace UI
     public:
         cpMainWindow();
         
-        void loadImages();
-       
     private:
         // we have to manage window ids
         wxWindowID board_panel_id;
