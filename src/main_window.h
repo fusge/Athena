@@ -30,10 +30,10 @@ namespace UI
         virtual bool OnInit();
     };
 
-    class cpBoardPanel : public wxPanel
+    class BoardPanel : public wxPanel
     {
     public:
-        cpBoardPanel(wxWindow * win, wxWindowID id);
+        BoardPanel(wxWindow * win, wxWindowID id);
         
         void loadImages();
         void render(wxDC &dc);
@@ -56,10 +56,10 @@ namespace UI
         std::unique_ptr<Core::Chessgame> game_system;
     };
 
-    class cpMainWindow : public wxFrame
+    class MainWindow : public wxFrame
     {
     public:
-        cpMainWindow();
+        MainWindow();
         
     private:
         // we have to manage window ids
@@ -67,7 +67,7 @@ namespace UI
 
         // window parts
         wxPanel* window_panel;
-        UI::cpBoardPanel* board_panel;
+        UI::BoardPanel* board_panel;
 
         void OnExit(wxCommandEvent& event);
         void OnAbout(wxCommandEvent& event);

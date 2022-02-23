@@ -14,12 +14,12 @@
 
 bool UI::Athena::OnInit()
 {
-    UI::cpMainWindow *frame = new UI::cpMainWindow();
+    UI::MainWindow *frame = new UI::MainWindow();
     frame->Show(true);
     return true;
 }
 
-UI::cpMainWindow::cpMainWindow()
+UI::MainWindow::MainWindow()
     : wxFrame(NULL, wxID_ANY, "Athena", wxDefaultPosition, wxSize(600,600))
 {
     // Load the menu bar
@@ -46,7 +46,7 @@ UI::cpMainWindow::cpMainWindow()
     // Create chessboard panel
     this->board_panel_id = wxWindow::NewControlId(1);
 
-    this->board_panel = new cpBoardPanel(window_panel, board_panel_id);
+    this->board_panel = new BoardPanel(window_panel, board_panel_id);
     this->board_panel->SetBackgroundColour(wxColor("#ededed"));
     wxBoxSizer* board_panel_sizer = new wxBoxSizer(wxHORIZONTAL);
     board_panel_sizer->Add(this->board_panel, 1, wxEXPAND | wxALL, 10);
@@ -55,16 +55,16 @@ UI::cpMainWindow::cpMainWindow()
 
     // Finish startup
     SetStatusText("Athena loaded successfully!");
-    Bind(wxEVT_MENU, &UI::cpMainWindow::OnAbout, this, wxID_ABOUT);
-    Bind(wxEVT_MENU, &UI::cpMainWindow::OnExit, this, wxID_EXIT);
+    Bind(wxEVT_MENU, &UI::MainWindow::OnAbout, this, wxID_ABOUT);
+    Bind(wxEVT_MENU, &UI::MainWindow::OnExit, this, wxID_EXIT);
 }
 
-void UI::cpMainWindow::OnExit(wxCommandEvent& event)
+void UI::MainWindow::OnExit(wxCommandEvent& event)
 {
     Close(true);
 }
 
-void UI::cpMainWindow::OnAbout(wxCommandEvent& event)
+void UI::MainWindow::OnAbout(wxCommandEvent& event)
 {
     std::string version = "Athena version ";
     version += std::to_string(ATHENA_VERSION_MAJOR);
@@ -77,7 +77,7 @@ void UI::cpMainWindow::OnAbout(wxCommandEvent& event)
     wxMessageBox(message , "About Athena", wxOK | wxICON_INFORMATION);
 }
 
-UI::cpBoardPanel::cpBoardPanel(wxWindow * win, wxWindowID id): wxPanel(win, id)
+UI::BoardPanel::BoardPanel(wxWindow * win, wxWindowID id): wxPanel(win, id)
 {
     // Initialize game logic
     this->game_system = std::make_unique<Core::Chessgame>();
@@ -101,12 +101,12 @@ UI::cpBoardPanel::cpBoardPanel(wxWindow * win, wxWindowID id): wxPanel(win, id)
     board_grid_sizer->Layout();
 
     // Bind drawing events to appropriate handlers
-    Bind(wxEVT_SIZE, &UI::cpBoardPanel::onBoardPanelResize, this);
-    Bind(wxEVT_ERASE_BACKGROUND, &UI::cpBoardPanel::clearBackground, this);
-    Bind(wxEVT_PAINT, &UI::cpBoardPanel::paintEventHandler, this);
+    Bind(wxEVT_SIZE, &UI::BoardPanel::onBoardPanelResize, this);
+    Bind(wxEVT_ERASE_BACKGROUND, &UI::BoardPanel::clearBackground, this);
+    Bind(wxEVT_PAINT, &UI::BoardPanel::paintEventHandler, this);
 }
 
-void UI::cpBoardPanel::loadImages() {
+void UI::BoardPanel::loadImages() {
     // load chessboard image 
     wxString message("Loading board image in directory ");
     wxImage::AddHandler(new wxPNGHandler);
@@ -185,7 +185,7 @@ void UI::cpBoardPanel::loadImages() {
     }
 }
 
-void UI::cpBoardPanel::onBoardPanelResize(wxSizeEvent &event)
+void UI::BoardPanel::onBoardPanelResize(wxSizeEvent &event)
 {
     this->Refresh();
     for (auto iter = board_squares.begin(); iter != board_squares.end(); ++iter)
@@ -195,7 +195,7 @@ void UI::cpBoardPanel::onBoardPanelResize(wxSizeEvent &event)
     event.Skip();
 }
 
-void UI::cpBoardPanel::render(wxDC &dc)
+void UI::BoardPanel::render(wxDC &dc)
 {
     auto width = dc.GetSize().GetWidth();
     auto height = dc.GetSize().GetHeight();
@@ -228,19 +228,19 @@ void UI::cpBoardPanel::render(wxDC &dc)
     }
 }
 
-void UI::cpBoardPanel::paintEventHandler(wxPaintEvent &event)
+void UI::BoardPanel::paintEventHandler(wxPaintEvent &event)
 {
     wxPaintDC dc(this);
     render(dc);
 }
 
-void UI::cpBoardPanel::paintNow()
+void UI::BoardPanel::paintNow()
 {
     wxClientDC dc(this);
     this->render(dc);
 }
 
-void UI::cpBoardPanel::clearBackground(wxEraseEvent &event)
+void UI::BoardPanel::clearBackground(wxEraseEvent &event)
 {
     wxDC *dc = event.GetDC();
     dc->Clear();
