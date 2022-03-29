@@ -43,20 +43,33 @@ UI::MainWindow::MainWindow()
                                     "Athena");
     window_panel->SetBackgroundColour(wxColour("#4f5049"));
 
+    // Describe overall layout with sizers 
+    wxBoxSizer* main_window_sizer = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* board_panel_sizer = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* information_region_sizer = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* pgn_view_sizer = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* chat_box_sizer = new wxBoxSizer(wxVERTICAL);
+    this->window_panel->SetSizer(main_window_sizer);
+    main_window_sizer->Add(board_panel_sizer, 1, wxSHAPED);
+    main_window_sizer->Add(information_region_sizer, 0);
+    information_region_sizer->Add(pgn_view_sizer, 1);
+    information_region_sizer->Add(chat_box_sizer, 1);
+
+
     // Create chessboard panel
     this->board_panel_id = wxWindow::NewControlId(1);
 
     this->board_panel = new BoardPanel(window_panel, board_panel_id);
     this->board_panel->SetBackgroundColour(wxColor("#ededed"));
-    wxBoxSizer* board_panel_sizer = new wxBoxSizer(wxHORIZONTAL);
     board_panel_sizer->Add(this->board_panel, 1, wxEXPAND | wxALL, 10);
-    this->window_panel->SetSizer(board_panel_sizer);
+    //this->window_panel->SetSizer(board_panel_sizer);
 
 
     // Finish startup
     SetStatusText("Athena loaded successfully!");
     Bind(wxEVT_MENU, &UI::MainWindow::OnAbout, this, wxID_ABOUT);
     Bind(wxEVT_MENU, &UI::MainWindow::OnExit, this, wxID_EXIT);
+    //Bind(wxEVT_SIZE, &UI::MainWiondow::onMainWindowResize, this);
 }
 
 void UI::MainWindow::OnExit(wxCommandEvent& event)
@@ -76,6 +89,12 @@ void UI::MainWindow::OnAbout(wxCommandEvent& event)
     wxString message (version);
     wxMessageBox(message , "About Athena", wxOK | wxICON_INFORMATION);
 }
+
+//void UI::MainWindow::onMainWindowResize(wxSizeEvent& event) 
+//{
+//    wxSize windowSize = event.GetSize();    
+//    this->
+//}
 
 UI::BoardPanel::BoardPanel(wxWindow * win, wxWindowID id): wxPanel(win, id)
 {
