@@ -74,5 +74,5 @@ namespace UI
     };
 }
 
-wxIMPLEMENT_APP(UI::Athena);
+wxDECLARE_APP(UI::Athena);
 #endif /* main_window_h */
