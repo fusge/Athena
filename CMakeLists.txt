@@ -8,33 +8,16 @@ project(
     LANGUAGES CXX
 )
 
-# ---- Download Dependencies ----
-include(FetchContent)
-set(FetchContent_Quiet FALSE)
+list(APPEND CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
 
-FetchContent_Declare(
-    wxWidgets
-    GIT_REPOSITORY https://github.com/wxWidgets/wxWidgets
-    GIT_TAG v3.2.2.1
-    GIT_PROGRESS TRUE
-    SYSTEM
-)
-FetchContent_GetProperties(wxWidgets)
-FetchContent_MakeAvailable(wxWidgets)
-
-FetchContent_Declare(
-    GTest
-    GIT_REPOSITORY https://github.com/google/googletest
-    GIT_TAG v1.13.0
-    GIT_PROGRESS TRUE
-    SYSTEM
-)
-FetchContent_GetProperties(GTest)
-FetchContent_MakeAvailable(GTest)
+# ---- Declare Dependencies ----
+find_package(GTest REQUIRED)
+find_package(wxWidgets REQUIRED COMPONENTS base core net)
 
 list(APPEND CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
 #list(APPEND CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES lib)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include_directories(${PROJECT_BINARY_DIR})
 configure_file(AthenaConfig.h.in AthenaConfig.h)
 
