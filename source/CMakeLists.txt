@@ -5,7 +5,7 @@
 cmake_minimum_required (VERSION 3.25)
 # Add source to this project's executable.
 
-include(${wxWidgets_USE_FILE})
+#include(${wxWidgets_USE_FILE})
 
 add_library(athena_lib 
         chessgame.h chessgame.cpp
