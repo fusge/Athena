@@ -13,65 +13,65 @@
 
 namespace UI
 {
-    struct imageInfo{
-        Core::Piece_t piece_type;
-        wxFileName filename;
-        wxImage *image;
-    };
+  struct imageInfo{
+    core::piece_t piece_type;
+    wxFileName filename;
+    wxImage *image;
+  };
 
-    struct boardSquare{
-        Core::Piece_t piece_type;
-        wxPanel *square_panel;
-    };
+  struct boardSquare{
+    core::piece_t piece_type;
+    wxPanel *square_panel;
+  };
 
-    class Athena : public wxApp
-    {
-    public:
-        virtual bool OnInit();
-    };
+  class Athena : public wxApp
+  {
+  public:
+    virtual bool OnInit();
+  };
 
-    class BoardPanel : public wxPanel
-    {
-    public:
-        BoardPanel(wxWindow * win, wxWindowID id);
-        
-        void loadImages();
-        void render(wxDC &dc);
-        void paintNow(); 
+  class BoardPanel : public wxPanel
+  {
+  public:
+    BoardPanel(wxWindow * win, wxWindowID id);
+    
+    void loadImages();
+    void render(wxDC &dc);
+    void paintNow(); 
 
-        // Event Handler functions
-        void paintEventHandler(wxPaintEvent &event);
-        void clearBackground(wxEraseEvent &event);
-        void onBoardPanelResize(wxSizeEvent &event);
+    // Event Handler functions
+    void paintEventHandler(wxPaintEvent &event);
+    void clearBackground(wxEraseEvent &event);
+    void onBoardPanelResize(wxSizeEvent &event);
 
-        //std::array<std::string *, 12> filenames;
+    //std::array<std::string *, 12> filenames;
 
-    private:
-        // Piece and board images
-        wxImage* board_image;
-        std::array<imageInfo, 12> piece_images;
-        std::array<UI::boardSquare, 64> board_squares;
+  private:
+    // Piece and board images
+    wxImage* board_image;
+    std::array<imageInfo, 12> piece_images;
+    std::array<UI::boardSquare, 64> board_squares;
 
-        // Game Core System
-        std::unique_ptr<Core::Chessgame> game_system;
-    };
+    // Game core System
+    std::unique_ptr<core::chessgame> game_system;
+  };
 
-    class MainWindow : public wxFrame
-    {
-    public:
-        MainWindow();
-        
-    private:
-        // we have to manage window ids
-        wxWindowID board_panel_id;
+  class MainWindow : public wxFrame
+  {
+  public:
+    MainWindow();
+    
+  private:
+    // we have to manage window ids
+    wxWindowID board_panel_id;
 
-        // window parts
-        wxPanel* window_panel;
-        UI::BoardPanel* board_panel;
+    // window parts
+    wxPanel* window_panel;
+    UI::BoardPanel* board_panel;
 
-        void OnExit(wxCommandEvent& event);
-        void OnAbout(wxCommandEvent& event);
-    };
+    void OnExit(wxCommandEvent& event);
+    void OnAbout(wxCommandEvent& event);
+  };
 }
 
 wxDECLARE_APP(UI::Athena);

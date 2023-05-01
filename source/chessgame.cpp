@@ -5,20 +5,18 @@
 
 #include "chessgame.h"
 
-Core::Chessgame::Chessgame()
+core::chessgame::chessgame()
 {
   std::string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-  this->setBoard(fen);
+  this->set_board(fen);
 }
 
-Core::Chessgame::Chessgame(std::string fen)
+core::chessgame::chessgame(std::string fen)
 {
-  this->setBoard(fen);
+  this->set_board(std::move(fen));
 }
 
-Core::Chessgame::~Chessgame() {}
-
-void Core::Chessgame::setBoard(std::string fen)
+void core::chessgame::set_board(std::string fen)
 {
   for (int row = 0; row < 8; row++) {
     this->board[row].fill(' ');
@@ -27,7 +25,7 @@ void Core::Chessgame::setBoard(std::string fen)
   std::cout << "Reading the standard fen string..." << std::endl;
   std::string::iterator fen_iter = fen.begin();
   int emptysquares;
-  Movenode gameNode = Movenode();
+  movenode gameNode = movenode();
 
   // First store the board pieces
   for (int row = 7; row >= 0; row--) {
@@ -94,11 +92,11 @@ void Core::Chessgame::setBoard(std::string fen)
   // Store current move number
   gameNode.on_move = std::stoi(std::string(fen_iter, fen.end()));
 
-  gameTree.push_back(gameNode);
-  currentPositionID = (int)gameTree.size() - 1;
+  m_game_tree.push_back(gameNode);
+  m_current_position_id = (int)m_game_tree.size() - 1;
 }
 
-void Core::Chessgame::show(bool flipped)
+void core::chessgame::show(bool flipped)
 {
   if (!flipped) {
     for (int row = 7; row >= 0; row--) {
@@ -137,12 +135,12 @@ void Core::Chessgame::show(bool flipped)
   }
 
   std::cout << std::endl;
-  std::cout << gameTree[currentPositionID].color_to_move << " to move"
+  std::cout << m_game_tree[m_current_position_id].color_to_move << " to move"
             << std::endl;
-  std::cout << "on move " << gameTree[currentPositionID].on_move << std::endl;
+  std::cout << "on move " << m_game_tree[m_current_position_id].on_move << std::endl;
 }
 
-std::string Core::Chessgame::getFEN()
+std::string core::chessgame::get_fen()
 {
   std::string fen = "";
   int empty_squares = 0;
@@ -166,34 +164,34 @@ std::string Core::Chessgame::getFEN()
   }
 
   fen += ' ';
-  fen += gameTree[currentPositionID].color_to_move;
+  fen += m_game_tree[m_current_position_id].color_to_move;
   fen += ' ';
 
-  if (gameTree[currentPositionID].white_castle_kingside == true) {
+  if (m_game_tree[m_current_position_id].white_castle_kingside == true) {
     fen += 'K';
   }
-  if (gameTree[currentPositionID].white_castle_queenside == true) {
+  if (m_game_tree[m_current_position_id].white_castle_queenside == true) {
     fen += 'Q';
   }
-  if (gameTree[currentPositionID].black_castle_kingside == true) {
+  if (m_game_tree[m_current_position_id].black_castle_kingside == true) {
     fen += 'k';
   }
-  if (gameTree[currentPositionID].black_castle_queenside == true) {
+  if (m_game_tree[m_current_position_id].black_castle_queenside == true) {
     fen += 'q';
   }
 
   fen += ' ';
-  fen += gameTree[currentPositionID].en_passant;
+  fen += m_game_tree[m_current_position_id].en_passant;
   fen += ' ';
 
-  fen += std::to_string(gameTree[currentPositionID].plys_since_capture);
+  fen += std::to_string(m_game_tree[m_current_position_id].plys_since_capture);
   fen += ' ';
-  fen += std::to_string(gameTree[currentPositionID].on_move);
+  fen += std::to_string(m_game_tree[m_current_position_id].on_move);
 
   return fen;
 }
 
-void Core::Chessgame::_drawLine(
+void core::chessgame::draw_line(
     std::shared_ptr<std::vector<std::string> > coordinates,
     std::pair<int, int> direction,
     bool iterate)
@@ -211,10 +209,10 @@ void Core::Chessgame::_drawLine(
   if (board[row][col] != ' ')
     return;
   else
-    _drawLine(coordinates, direction, iterate);
+    draw_line(coordinates, direction, iterate);
 }
 
-std::vector<std::string> Core::Chessgame::_availableMoves(std::string square,
+std::vector<std::string> core::chessgame::get_available_moves(std::string square,
                                                           char piece)
 {
   std::vector<std::string> result;
@@ -228,7 +226,7 @@ std::vector<std::string> Core::Chessgame::_availableMoves(std::string square,
           continue;
         coordinates->push_back(square);
         // iterate to the end of board or piece presence
-        _drawLine(coordinates, std::make_pair(stepcol, steprow), true);
+        draw_line(coordinates, std::make_pair(stepcol, steprow), true);
         result.insert(result.end(), coordinates->begin(), coordinates->end());
       }
     }
@@ -243,20 +241,20 @@ std::vector<std::string> Core::Chessgame::_availableMoves(std::string square,
           continue;
         coordinates->push_back(square);
         // only find first squares
-        _drawLine(coordinates, std::make_pair(stepcol, steprow), false);
+        draw_line(coordinates, std::make_pair(stepcol, steprow), false);
         result.insert(result.end(), coordinates->begin(), coordinates->end());
       }
     }
     // Handle castles
     if (piece == 'K' && square == "e1") {
-      if (gameTree[currentPositionID].white_castle_kingside
+      if (m_game_tree[m_current_position_id].white_castle_kingside
           && board[0][5] == ' ' && board[0][6] == ' ')
       {
         square[0] += 2;
         result.push_back(square);
         square[0] -= 2;
       }
-      if (gameTree[currentPositionID].white_castle_queenside
+      if (m_game_tree[m_current_position_id].white_castle_queenside
           && board[0][3] == ' ' && board[0][2] == ' ')
       {
         square[0] -= 2;
@@ -265,14 +263,14 @@ std::vector<std::string> Core::Chessgame::_availableMoves(std::string square,
       }
     }
     if (piece == 'k' && square == "e8") {
-      if (gameTree[currentPositionID].black_castle_kingside
+      if (m_game_tree[m_current_position_id].black_castle_kingside
           && board[0][5] == ' ' && board[0][6] == ' ')
       {
         square[0] += 2;
         result.push_back(square);
         square[0] -= 2;
       }
-      if (gameTree[currentPositionID].black_castle_queenside
+      if (m_game_tree[m_current_position_id].black_castle_queenside
           && board[0][3] == ' ' && board[0][2] == ' ')
       {
         square[0] -= 2;
@@ -291,7 +289,7 @@ std::vector<std::string> Core::Chessgame::_availableMoves(std::string square,
           continue;
         coordinates->push_back(square);
         // iterate to the end of the board or piece presence.
-        _drawLine(coordinates, std::make_pair(stepcol, steprow), true);
+        draw_line(coordinates, std::make_pair(stepcol, steprow), true);
         result.insert(result.end(), coordinates->begin(), coordinates->end());
       }
     }
@@ -306,7 +304,7 @@ std::vector<std::string> Core::Chessgame::_availableMoves(std::string square,
           continue;
         coordinates->push_back(square);
         // iterate to the end of the board or piece presence
-        _drawLine(coordinates, std::make_pair(stepcol, steprow), true);
+        draw_line(coordinates, std::make_pair(stepcol, steprow), true);
         result.insert(result.end(), coordinates->begin(), coordinates->end());
       }
     }
@@ -330,7 +328,7 @@ std::vector<std::string> Core::Chessgame::_availableMoves(std::string square,
           continue;
         else {
           coordinates->push_back(square);
-          _drawLine(coordinates, std::make_pair(stepcol, steprow), false);
+          draw_line(coordinates, std::make_pair(stepcol, steprow), false);
           result.insert(result.end(), coordinates->begin(), coordinates->end());
         }
       }
@@ -356,7 +354,7 @@ std::vector<std::string> Core::Chessgame::_availableMoves(std::string square,
         else {
           coordinates->push_back(square);
           // iterate only once
-          _drawLine(coordinates, std::make_pair(stepcol, steprow), false);
+          draw_line(coordinates, std::make_pair(stepcol, steprow), false);
           result.insert(result.end(), coordinates->begin(), coordinates->end());
         }
       }
@@ -366,28 +364,28 @@ std::vector<std::string> Core::Chessgame::_availableMoves(std::string square,
   return result;
 }
 
-char Core::Chessgame::identifyPiece(std::string move)
+char core::chessgame::identify_piece(std::string move)
 {
   int col = int(move[0]) - 97;
   int row = int(move[1]) - 49;
   return this->board[row][col];
 }
 
-char Core::Chessgame::identifyPiece(int index)
+char core::chessgame::identify_piece(int index)
 {
   int row = index / 8;
   int col = index % 8;
   return this->board[row][col];
 }
 
-void Core::Chessgame::showPossibleMoves(std::string square)
+void core::chessgame::show_possible_moves(std::string square)
 {
-  char piece = identifyPiece(square);
+  char piece = identify_piece(square);
   if (piece == ' ') {
     std::cout << "There is no piece there." << std::endl;
     return;
   }
-  std::vector<std::string> choices = this->_availableMoves(square, piece);
+  std::vector<std::string> choices = this->get_available_moves(square, piece);
   std::array<std::array<char, 8>, 8> allowedMovesBoard;
   for (int row = 7; row >= 0; row--) {
     allowedMovesBoard[row].fill(' ');
@@ -419,7 +417,7 @@ void Core::Chessgame::showPossibleMoves(std::string square)
   std::cout << std::endl;
 }
 
-int Core::Chessgame::playMove(std::string move_set)
+int core::chessgame::play_move(std::string move_set)
 {
   // Check that we are getting the right formatted string
   if (move_set.length() != 4) {
@@ -431,9 +429,9 @@ int Core::Chessgame::playMove(std::string move_set)
   // get source and destination strings and check for available moves
   std::string start_square = move_set.substr(0, 2);
   std::string end_square = move_set.substr(2, 2);
-  char piece = identifyPiece(start_square);
+  char piece = identify_piece(start_square);
   bool match = false;
-  std::vector<std::string> choices = _availableMoves(start_square, piece);
+  std::vector<std::string> choices = get_available_moves(start_square, piece);
   for (auto iter = choices.begin(); iter != choices.end(); iter++) {
     if (*iter == end_square) {
       match = true;
@@ -444,17 +442,17 @@ int Core::Chessgame::playMove(std::string move_set)
   if (!match)
     return 1;
   // check whether there is a capture (empty squares return true)
-  else if (!_validCapture(move_set))
+  else if (!is_valid_capture(move_set))
     return 1;
   else
-    _updateBoard(move_set);
+    update_board(move_set);
   return 0;
 }
 
-bool Core::Chessgame::_validCapture(const std::string move_set)
+bool core::chessgame::is_valid_capture(const std::string move_set)
 {
-  char piece = identifyPiece(move_set.substr(0, 2));
-  char captured_piece = identifyPiece(move_set.substr(2, 2));
+  char piece = identify_piece(move_set.substr(0, 2));
+  char captured_piece = identify_piece(move_set.substr(2, 2));
   // Pawns are the only piece that changes it's move based on captures.
   if (piece == 'p' || piece == 'P') {
     if (captured_piece == ' '
@@ -474,9 +472,9 @@ bool Core::Chessgame::_validCapture(const std::string move_set)
     return false;
 }
 
-std::string Core::Chessgame::_findKing(char color)
+std::string core::chessgame::find_king(char color)
 {
-  unsigned int temp_node_id = currentPositionID;
+  unsigned int temp_node_id = m_current_position_id;
   char piece;
   std::string square;
   if (color == 'b') {
@@ -489,17 +487,17 @@ std::string Core::Chessgame::_findKing(char color)
 
   // easiest way is to look at the moves played
   while (temp_node_id != 0) {
-    if (gameTree[temp_node_id].pgn_move_played.front() == 'K'
-        && gameTree[temp_node_id].color_to_move != color)
+    if (m_game_tree[temp_node_id].pgn_move_played.front() == 'K'
+        && m_game_tree[temp_node_id].color_to_move != color)
     {
-      square = gameTree[temp_node_id].move_played.substr(2, 2);
+      square = m_game_tree[temp_node_id].move_played.substr(2, 2);
       break;
     }
-    temp_node_id = gameTree[temp_node_id].prev_move_id;
+    temp_node_id = m_game_tree[temp_node_id].prev_move_id;
   }
 
   // make sure that the king is where we think it is
-  if (identifyPiece(square) != piece) {
+  if (identify_piece(square) != piece) {
     for (int row = 0; row < 8; row++) {
       for (int col = 0; col < 8; col++) {
         if (board[row][col] == piece) {
@@ -512,26 +510,26 @@ std::string Core::Chessgame::_findKing(char color)
   return square;
 }
 
-bool Core::Chessgame::_kingInCheck(std::string move_set, char color)
+bool core::chessgame::king_in_check(std::string move_set, char color)
 {
   std::cout << move_set << " " << color << std::endl;
   return false;
 }
 
-bool Core::Chessgame::_checkPins(std::string move_set)
+bool core::chessgame::piece_pinned(std::string move_set)
 {
   std::cout << move_set << std::endl;
   return false;
 }
 
-void Core::Chessgame::_updateBoard(std::string move_set)
+void core::chessgame::update_board(std::string move_set)
 {
-  char piece = identifyPiece(move_set.substr(0, 2));
+  char piece = identify_piece(move_set.substr(0, 2));
   std::string start_square = move_set.substr(0, 2);
   std::string end_square = move_set.substr(2, 2);
   std::string move_str = move_set.substr(2, 2);
-  Movenode added_movenode = gameTree[currentPositionID];
-  added_movenode.captured_piece = identifyPiece(move_set.substr(2, 2));
+  movenode added_movenode = m_game_tree[m_current_position_id];
+  added_movenode.captured_piece = identify_piece(move_set.substr(2, 2));
 
   // Update board
   board[int(start_square[1]) - 49][int(start_square[0]) - 97] = ' ';
@@ -553,13 +551,13 @@ void Core::Chessgame::_updateBoard(std::string move_set)
   }
 
   added_movenode.black_castle_queenside =
-      gameTree[currentPositionID].black_castle_queenside;
+      m_game_tree[m_current_position_id].black_castle_queenside;
   added_movenode.black_castle_kingside =
-      gameTree[currentPositionID].black_castle_kingside;
+      m_game_tree[m_current_position_id].black_castle_kingside;
   added_movenode.white_castle_queenside =
-      gameTree[currentPositionID].white_castle_queenside;
+      m_game_tree[m_current_position_id].white_castle_queenside;
   added_movenode.white_castle_kingside =
-      gameTree[currentPositionID].white_castle_kingside;
+      m_game_tree[m_current_position_id].white_castle_kingside;
 
   // Make sure to update en passant square
   if (piece == 'p' || piece == 'P') {
@@ -605,28 +603,28 @@ void Core::Chessgame::_updateBoard(std::string move_set)
     if (piece == 'r' && start_square == "h8")
       added_movenode.black_castle_queenside = false;
   }
-  added_movenode.prev_move_id = currentPositionID;
+  added_movenode.prev_move_id = m_current_position_id;
 
   // We shoudl find an available slot if there is one. else append.
-  int newPositionID = _findAvailableTreeID();
+  int newPositionID = find_available_tree_id();
   if (newPositionID == 0) {
-    gameTree.push_back(added_movenode);
-    gameTree[currentPositionID].sidelines.push_back(currentPositionID + 1);
-    currentPositionID = (unsigned int)gameTree.size() - 1;
+    m_game_tree.push_back(added_movenode);
+    m_game_tree[m_current_position_id].sidelines.push_back(m_current_position_id + 1);
+    m_current_position_id = (unsigned int)m_game_tree.size() - 1;
   } else {
-    gameTree[newPositionID] = added_movenode;
-    gameTree[currentPositionID].sidelines.push_back(newPositionID);
-    currentPositionID = newPositionID;
+    m_game_tree[newPositionID] = added_movenode;
+    m_game_tree[m_current_position_id].sidelines.push_back(newPositionID);
+    m_current_position_id = newPositionID;
   }
 
   return;
 }
 
-int Core::Chessgame::_findAvailableTreeID()
+int core::chessgame::find_available_tree_id()
 {
   unsigned int result = 0;
-  for (unsigned int tree_id = 1; tree_id < gameTree.size(); tree_id++) {
-    if (!gameTree[tree_id].linked) {
+  for (unsigned int tree_id = 1; tree_id < m_game_tree.size(); tree_id++) {
+    if (!m_game_tree[tree_id].linked) {
       result = tree_id;
       break;
     }
@@ -634,30 +632,30 @@ int Core::Chessgame::_findAvailableTreeID()
   return result;
 }
 
-std::string Core::Chessgame::getPGN()
+std::string core::chessgame::get_pgn()
 {
   std::string pgn = "";
   unsigned int position_id = 0;
   while (true) {
-    pgn += gameTree[position_id].pgn_move_played;
+    pgn += m_game_tree[position_id].pgn_move_played;
     pgn += " ";
-    if (gameTree[position_id].sidelines.size() == 0)
+    if (m_game_tree[position_id].sidelines.size() == 0)
       break;
-    position_id = gameTree[position_id].sidelines[0];
-    if (gameTree[position_id].color_to_move == 'b') {
-      pgn.push_back(char(gameTree[position_id].on_move + 48));
+    position_id = m_game_tree[position_id].sidelines[0];
+    if (m_game_tree[position_id].color_to_move == 'b') {
+      pgn.push_back(char(m_game_tree[position_id].on_move + 48));
       pgn += ".";
     }
   }
   return pgn;
 }
 
-std::string Core::Chessgame::generateMovePGN(std::string move_set)
+std::string core::chessgame::generate_move_pgn(std::string move_set)
 {
   std::string result = "";
   std::string start_square = move_set.substr(0, 2);
   std::string end_square = move_set.substr(2, 2);
-  char piece = identifyPiece(start_square);
+  char piece = identify_piece(start_square);
 
   // Start forming the string
   char pgn_piece;
@@ -674,28 +672,28 @@ std::string Core::Chessgame::generateMovePGN(std::string move_set)
   // The idea now is to reverse engineer all squares where the
   // piece can come from. This is to deal with cases where we
   // have ambiguity (more than one piece can land on that square)
-  std::vector<std::string> available_moves;
-  std::vector<std::string> ambiguous_moves;
+  std::vector<std::string> available_moves_list;
+  std::vector<std::string> ambiguous_moves_list;
   if (piece == 'P')
-    available_moves = _availableMoves(end_square, 'p');
+    available_moves_list = get_available_moves(end_square, 'p');
   else if (piece == 'p')
-    available_moves = _availableMoves(end_square, 'P');
+    available_moves_list = get_available_moves(end_square, 'P');
   else
-    available_moves = _availableMoves(end_square, piece);
+    available_moves_list = get_available_moves(end_square, piece);
   int count = 0;
-  for (auto iter = available_moves.begin(); iter != available_moves.end();
+  for (auto iter = available_moves_list.begin(); iter != available_moves_list.end();
        iter++)
   {
-    if (identifyPiece(*iter) == piece) {
+    if (identify_piece(*iter) == piece) {
       count++;
-      ambiguous_moves.push_back(*iter);
+      ambiguous_moves_list.push_back(*iter);
     }
   }
   // add disambiguation symbols
   if (count > 1) {
     bool diff_row = false;
     bool diff_col = false;
-    for (auto iter = ambiguous_moves.begin(); iter != ambiguous_moves.end();
+    for (auto iter = ambiguous_moves_list.begin(); iter != ambiguous_moves_list.end();
          iter++)
     {
       if (start_square != *iter) {
@@ -710,7 +708,7 @@ std::string Core::Chessgame::generateMovePGN(std::string move_set)
   }
 
   // Add captures symbol
-  if (identifyPiece(end_square) != ' ')
+  if (identify_piece(end_square) != ' ')
     result += 'x';
 
   result += end_square;

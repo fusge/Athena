@@ -99,7 +99,7 @@ UI::BoardPanel::BoardPanel(wxWindow* win, wxWindowID id)
     : wxPanel(win, id)
 {
   // Initialize game logic
-  this->game_system = std::make_unique<Core::Chessgame>();
+  this->game_system = std::make_unique<core::chessgame>();
 
   // Load images and spacing
   this->loadImages();
@@ -114,7 +114,7 @@ UI::BoardPanel::BoardPanel(wxWindow* win, wxWindowID id)
   // synchronize board state with UI
   for (int iter = 0; iter < 64; ++iter) {
     board_squares[iter].piece_type =
-        (Core::Piece_t)this->game_system->identifyPiece(iter);
+        (core::piece_t)this->game_system->identify_piece(iter);
   }
   board_grid_sizer->Layout();
 
@@ -165,36 +165,36 @@ void UI::BoardPanel::loadImages()
 
       if (*name == "pawn") {
         if (*color == "w")
-          image_iter->piece_type = Core::WHITE_PAWN;
+          image_iter->piece_type = core::white_pawn;
         else
-          image_iter->piece_type = Core::BLACK_PAWN;
+          image_iter->piece_type = core::black_pawn;
       } else if (*name == "rook") {
         if (*color == "w")
-          image_iter->piece_type = Core::WHITE_ROOK;
+          image_iter->piece_type = core::white_rook;
         else
-          image_iter->piece_type = Core::BLACK_ROOK;
+          image_iter->piece_type = core::black_rook;
       } else if (*name == "bishop") {
         if (*color == "w")
-          image_iter->piece_type = Core::WHITE_BISHOP;
+          image_iter->piece_type = core::white_bishop;
         else
-          image_iter->piece_type = Core::BLACK_BISHOP;
+          image_iter->piece_type = core::black_bishop;
       } else if (*name == "knight") {
         if (*color == "w")
-          image_iter->piece_type = Core::WHITE_KNIGHT;
+          image_iter->piece_type = core::white_knight;
         else
-          image_iter->piece_type = Core::BLACK_KNIGHT;
+          image_iter->piece_type = core::black_knight;
       } else if (*name == "queen") {
         if (*color == "w")
-          image_iter->piece_type = Core::WHITE_QUEEN;
+          image_iter->piece_type = core::white_queen;
         else
-          image_iter->piece_type = Core::BLACK_QUEEN;
+          image_iter->piece_type = core::black_queen;
       } else if (*name == "king") {
         if (*color == "w")
-          image_iter->piece_type = Core::WHITE_KING;
+          image_iter->piece_type = core::white_king;
         else
-          image_iter->piece_type = Core::BLACK_KING;
+          image_iter->piece_type = core::black_king;
       } else
-        image_iter->piece_type = Core::EMPTY_SQUARE;
+        image_iter->piece_type = core::empty_square;
       ++image_iter;
     }
   }
@@ -223,12 +223,12 @@ void UI::BoardPanel::render(wxDC& dc)
   // Draw the pieces
   wxImage tempPieceImage;
   wxBitmap tempPieceBitmap;
-  Core::Piece_t piece_type;
+  core::piece_t piece_type;
   int indx;
   for (int iter = 0; iter < 64; ++iter) {
-    piece_type = (Core::Piece_t)this->game_system->identifyPiece(iter);
+    piece_type = (core::piece_t)this->game_system->identify_piece(iter);
     // Don't bother drawing empty squares
-    if (piece_type == Core::EMPTY_SQUARE)
+    if (piece_type == core::empty_square)
       continue;
     for (indx = 0; indx < 12; ++indx) {
       // std::cout << (char) piece_images[indx].piece_type << " " << indx <<
