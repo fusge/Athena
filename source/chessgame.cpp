@@ -18,24 +18,24 @@ core::chessgame::chessgame(std::string fen)
 
 void core::chessgame::set_board(std::string fen)
 {
-  for (int row = 0; row < 8; row++) {
-    this->board[row].fill(' ');
+  for (auto& board_row: this->board) {
+    board_row.fill(' ');
   }
 
   std::cout << "Reading the standard fen string..." << std::endl;
   std::string::iterator fen_iter = fen.begin();
-  int emptysquares;
-  movenode gameNode = movenode();
+  int emptysquares=0;
+  movenode game_node = movenode();
 
   // First store the board pieces
-  for (int row = 7; row >= 0; row--) {
-    for (int col = 0; col < 8; col++) {
+  for (size_t row = core::max_board_range-1; row >= 0; row--) {
+    for (size_t col = 0; col < core::max_board_range; col++) {
       if (*fen_iter == '/') {
         fen_iter++;
       }
-      if (isdigit(*fen_iter)) {
-        emptysquares = (*fen_iter) - 48;  // Damn you ascii;
-        col = col + emptysquares;
+      if (isdigit(*fen_iter) > 0) {
+        emptysquares = (*fen_iter) - '0';  // Damn you ascii;
+        col += static_cast<size_t>(emptysquares);
         fen_iter++;
       } else {
         board[row][col] = *fen_iter;
@@ -46,7 +46,7 @@ void core::chessgame::set_board(std::string fen)
 
   // Handle whos move is it anyway
   fen_iter++;
-  gameNode.color_to_move = *fen_iter;
+  game_node.color_to_move = *fen_iter;
   fen_iter++;
 
   // Handle castling rights
@@ -54,19 +54,19 @@ void core::chessgame::set_board(std::string fen)
   while (*fen_iter != ' ') {
     switch (*fen_iter) {
       case 'K':
-        gameNode.white_castle_kingside = true;
+        game_node.white_castle_kingside = true;
         fen_iter++;
         break;
       case 'Q':
-        gameNode.white_castle_queenside = true;
+        game_node.white_castle_queenside = true;
         fen_iter++;
         break;
       case 'k':
-        gameNode.black_castle_kingside = true;
+        game_node.black_castle_kingside = true;
         fen_iter++;
         break;
       case 'q':
-        gameNode.black_castle_queenside = true;
+        game_node.black_castle_queenside = true;
         fen_iter++;
         break;
     }
@@ -75,10 +75,10 @@ void core::chessgame::set_board(std::string fen)
   // store en_passant squares
   fen_iter++;
   if (*fen_iter != '-') {
-    gameNode.en_passant = std::string(fen_iter, fen_iter + 2);
+    game_node.en_passant = std::string(fen_iter, fen_iter + 2);
     fen_iter = fen_iter + 3;
   } else {
-    gameNode.en_passant = *fen_iter;
+    game_node.en_passant = *fen_iter;
     fen_iter = fen_iter + 2;
   }
 
@@ -87,50 +87,42 @@ void core::chessgame::set_board(std::string fen)
   while (*fen_iter != ' ') {
     fen_iter++;
   }
-  gameNode.plys_since_capture = std::stoi(std::string(start_digit, fen_iter));
+  game_node.plys_since_capture = std::stoi(std::string(start_digit, fen_iter));
 
   // Store current move number
-  gameNode.on_move = std::stoi(std::string(fen_iter, fen.end()));
+  game_node.on_move = std::stoi(std::string(fen_iter, fen.end()));
 
-  m_game_tree.push_back(gameNode);
-  m_current_position_id = (int)m_game_tree.size() - 1;
+  m_game_tree.push_back(game_node);
+  m_current_position_id = static_cast<uint32_t>(m_game_tree.size()) - 1;
 }
 
 void core::chessgame::show(bool flipped)
 {
   if (!flipped) {
-    for (int row = 7; row >= 0; row--) {
+    for (size_t row = core::max_board_range-1; row >= 0; row--) {
       std::cout << row + 1 << " ";
-      for (int col = 0; col < 8; col++) {
-        if (board[row][col] == ' ') {
-          std::cout << "[ ]";
-        } else {
-          std::cout << '[' << this->board[row][col] << ']';
-        }
+      for (size_t col = 0; col < max_board_range; col++) {
+        std::cout << '[' << this->board[row][col] << ']';
       }
       std::cout << std::endl;
     }
   } else {
-    for (int row = 0; row < 8; row++) {
+    for (size_t row = 0; row < core::max_board_range; row++) {
       std::cout << row + 1 << " ";
-      for (int col = 7; col >= 0; col--) {
-        if (board[row][col] == ' ') {
-          std::cout << "[ ]";
-        } else {
-          std::cout << '[' << this->board[row][col] << ']';
-        }
+      for (size_t col = max_board_range - 1; col >= 0; col--) {
+        std::cout << '[' << this->board[row][col] << ']';
       }
       std::cout << std::endl;
     }
   }
   std::cout << "   ";
   if (!flipped) {
-    for (int file = 0; file < 8; file++) {
-      std::cout << char(file + 97) << "  ";
+    for (size_t file = 0; file < core::max_board_range; file++) {
+      std::cout << static_cast<char>(file + 'a') << "  ";
     }
   } else {
-    for (int file = 7; file >= 0; file--) {
-      std::cout << char(file + 97) << "  ";
+    for (size_t file = core::max_board_range-1; file >= 0; file--) {
+      std::cout << static_cast<char>(file + 'a') << "  ";
     }
   }
 
@@ -142,22 +134,22 @@ void core::chessgame::show(bool flipped)
 
 std::string core::chessgame::get_fen()
 {
-  std::string fen = "";
+  std::string fen;
   int empty_squares = 0;
-  for (int row = 7; row >= 0; row--) {
-    for (int col = 0; col < 8; col++) {
+  for (size_t row = core::max_board_range-1; row >= 0; row--) {
+    for (size_t col = 0; col < max_board_range; col++) {
       if (this->board[row][col] == ' ') {
         empty_squares++;
       } else {
         if (empty_squares != 0) {
-          fen += char(empty_squares + 48);
+          fen += static_cast<char>(empty_squares + '0');
           empty_squares = 0;
         }
         fen += this->board[row][col];
       }
     }
     if (empty_squares != 0) {
-      fen += char(empty_squares + 48);
+      fen += static_cast<char>(empty_squares + '0');
       empty_squares = 0;
     }
     fen += '/';
@@ -167,16 +159,16 @@ std::string core::chessgame::get_fen()
   fen += m_game_tree[m_current_position_id].color_to_move;
   fen += ' ';
 
-  if (m_game_tree[m_current_position_id].white_castle_kingside == true) {
+  if (m_game_tree[m_current_position_id].white_castle_kingside) {
     fen += 'K';
   }
-  if (m_game_tree[m_current_position_id].white_castle_queenside == true) {
+  if (m_game_tree[m_current_position_id].white_castle_queenside) {
     fen += 'Q';
   }
-  if (m_game_tree[m_current_position_id].black_castle_kingside == true) {
+  if (m_game_tree[m_current_position_id].black_castle_kingside) {
     fen += 'k';
   }
-  if (m_game_tree[m_current_position_id].black_castle_queenside == true) {
+  if (m_game_tree[m_current_position_id].black_castle_queenside) {
     fen += 'q';
   }
 

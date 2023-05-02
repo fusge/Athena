@@ -1,6 +1,7 @@
 #ifndef CHESSGAME_H
 #define CHESSGAME_H
 
+#include <cstddef>
 #include <vector>
 #include <array>
 #include <string>
@@ -9,6 +10,7 @@
 #include <memory>
 
 namespace core {
+constexpr size_t max_board_range = 8;
 struct movenode {
   bool linked = true;
   int ply = 0;
@@ -46,7 +48,7 @@ enum piece_t {
 class chessgame {
   public:
   chessgame();
-  explicit chessgame(std::string fen) ;
+  explicit chessgame(std::string fen);
 
   std::string get_fen();
   std::string get_pgn();
@@ -56,13 +58,13 @@ class chessgame {
   char identify_piece(std::string square);
   char identify_piece(int index);
 
-  void show(bool fliped);
+  void show(bool flipped);
   void show_possible_moves(std::string square);
 
   private:
-  std::array<std::array<char, 8>, 8> board;
+  std::array<std::array<char, max_board_columns>, max_board_range> board;
   std::vector<movenode> m_game_tree;
-  unsigned int m_current_position_id;
+  uint32_t m_current_position_id;
 
   void draw_line(std::shared_ptr<std::vector<std::string> > coordinates, std::pair<int, int> direction, bool iterate);
   std::vector<std::string> get_available_moves(std::string square, char piece);

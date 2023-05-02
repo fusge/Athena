@@ -8,21 +8,13 @@ project(
     LANGUAGES CXX
 )
 
-list(APPEND CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
-
 # ---- Declare Dependencies ----
-find_package(GTest REQUIRED)
 find_package(wxWidgets REQUIRED COMPONENTS base core net)
 
 list(APPEND CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
-#list(APPEND CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES lib)
-
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include_directories(${PROJECT_BINARY_DIR})
 configure_file(AthenaConfig.h.in AthenaConfig.h)
-
-# windows users might have a hard time running tests
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
 include(cmake/prelude.cmake)
 include(cmake/project-is-top-level.cmake)
@@ -31,7 +23,6 @@ include(cmake/variables.cmake)
 # Include sub-projects.
 add_subdirectory("source")
 add_subdirectory("data")
-
 
 # ---- Install rules ----
 
