@@ -28,14 +28,14 @@ void core::chessgame::set_board(std::string fen)
   movenode game_node = movenode();
 
   // First store the board pieces
-  for (size_t row = core::max_board_range-1; row >= 0; row--) {
-    for (size_t col = 0; col < core::max_board_range; col++) {
+  for (int row = core::max_board_range-1; row >= 0; row--) {
+    for (int col = 0; col < core::max_board_range; col++) {
       if (*fen_iter == '/') {
         fen_iter++;
       }
       if (isdigit(*fen_iter) > 0) {
         emptysquares = (*fen_iter) - '0';  // Damn you ascii;
-        col += static_cast<size_t>(emptysquares);
+        col += emptysquares;
         fen_iter++;
       } else {
         board[row][col] = *fen_iter;
@@ -99,17 +99,17 @@ void core::chessgame::set_board(std::string fen)
 void core::chessgame::show(bool flipped)
 {
   if (!flipped) {
-    for (size_t row = core::max_board_range-1; row >= 0; row--) {
+    for (int row = core::max_board_range-1; row >= 0; row--) {
       std::cout << row + 1 << " ";
-      for (size_t col = 0; col < max_board_range; col++) {
+      for (int col = 0; col < max_board_range; col++) {
         std::cout << '[' << this->board[row][col] << ']';
       }
       std::cout << std::endl;
     }
   } else {
-    for (size_t row = 0; row < core::max_board_range; row++) {
+    for (int row = 0; row < core::max_board_range; row++) {
       std::cout << row + 1 << " ";
-      for (size_t col = max_board_range - 1; col >= 0; col--) {
+      for (int col = max_board_range - 1; col >= 0; col--) {
         std::cout << '[' << this->board[row][col] << ']';
       }
       std::cout << std::endl;
@@ -117,11 +117,11 @@ void core::chessgame::show(bool flipped)
   }
   std::cout << "   ";
   if (!flipped) {
-    for (size_t file = 0; file < core::max_board_range; file++) {
+    for (int file = 0; file < core::max_board_range; file++) {
       std::cout << static_cast<char>(file + 'a') << "  ";
     }
   } else {
-    for (size_t file = core::max_board_range-1; file >= 0; file--) {
+    for (int file = core::max_board_range-1; file >= 0; file--) {
       std::cout << static_cast<char>(file + 'a') << "  ";
     }
   }
@@ -136,8 +136,8 @@ std::string core::chessgame::get_fen()
 {
   std::string fen;
   int empty_squares = 0;
-  for (size_t row = core::max_board_range-1; row >= 0; row--) {
-    for (size_t col = 0; col < max_board_range; col++) {
+  for (int row = core::max_board_range-1; row >= 0; row--) {
+    for (int col = 0; col < max_board_range; col++) {
       if (this->board[row][col] == ' ') {
         empty_squares++;
       } else {

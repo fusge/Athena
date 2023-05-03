@@ -10,7 +10,7 @@
 #include <memory>
 
 namespace core {
-constexpr size_t max_board_range = 8;
+constexpr int max_board_range = 8;
 struct movenode {
   bool linked = true;
   int ply = 0;
@@ -62,7 +62,7 @@ class chessgame {
   void show_possible_moves(std::string square);
 
   private:
-  std::array<std::array<char, max_board_columns>, max_board_range> board;
+  std::array<std::array<char, max_board_range>, max_board_range> board;
   std::vector<movenode> m_game_tree;
   uint32_t m_current_position_id;
 
