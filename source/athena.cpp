@@ -6,7 +6,7 @@
 #include "main_window.h"
 #include "wx/window.h"
 
-wxIMPLEMENT_APP(UI::Athena);
+wxIMPLEMENT_APP(ui::athena);
 // int main() {
 //     std::cout << "Chesspeer VERSION " ;
 //     std::cout << CHESSPEER_VERSION_MAJOR << ".";

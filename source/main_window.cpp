@@ -13,70 +13,72 @@
 #include "AthenaConfig.h"
 #include "chessgame.h"
 
-bool UI::Athena::OnInit()
+bool ui::athena::OnInit()
 {
-  UI::MainWindow* frame = new UI::MainWindow();
+  auto* frame = new ui::main_window();
   frame->Show(true);
   return true;
 }
 
-UI::MainWindow::MainWindow()
-    : wxFrame(NULL, wxID_ANY, "Athena", wxDefaultPosition, wxSize(600, 600))
+ui::main_window::main_window()
+    : wxFrame(NULL, 
+              wxID_ANY, 
+              "Athena", 
+              wxDefaultPosition, 
+              wxSize(ui::default_width, ui::default_height)), 
+      m_board_panel_id(wxWindow::NewControlId(1)), 
+      m_window_panel(new wxPanel(this,
+                                 wxID_ANY,
+                                 wxDefaultPosition,
+                                 wxDefaultSize,
+                                 wxTAB_TRAVERSAL,
+                                 "Athena")),
+      m_board_panel(new board_panel(m_window_panel, m_board_panel_id))
 {
   // Load the menu bar
-  wxMenu* menuFile = new wxMenu;
+  auto* menu_file = new wxMenu;
   // menuFile->AppendSeparator();
-  menuFile->Append(wxID_EXIT);
-  wxMenu* menuHelp = new wxMenu;
-  menuHelp->Append(wxID_ABOUT);
-  wxMenuBar* menuBar = new wxMenuBar;
-  menuBar->Append(menuFile, "&File");
-  menuBar->Append(menuHelp, "&Help");
-  SetMenuBar(menuBar);
+  menu_file->Append(wxID_EXIT);
+  auto* menu_help = new wxMenu;
+  menu_help->Append(wxID_ABOUT);
+  auto* menu_bar = new wxMenuBar;
+  menu_bar->Append(menu_file, "&File");
+  menu_bar->Append(menu_help, "&Help");
+  SetMenuBar(menu_bar);
   CreateStatusBar();
 
   // create a generic window panel
-  this->window_panel = new wxPanel(this,
-                                   wxID_ANY,
-                                   wxDefaultPosition,
-                                   wxDefaultSize,
-                                   wxTAB_TRAVERSAL,
-                                   "Athena");
-  window_panel->SetBackgroundColour(wxColour("#4f5049"));
+  
+  m_window_panel->SetBackgroundColour(wxColour("#4f5049"));
 
   // Describe overall layout with sizers
-  wxBoxSizer* main_window_sizer = new wxBoxSizer(wxHORIZONTAL);
-  wxBoxSizer* board_panel_sizer = new wxBoxSizer(wxHORIZONTAL);
-  wxBoxSizer* information_region_sizer = new wxBoxSizer(wxVERTICAL);
-  wxBoxSizer* pgn_view_sizer = new wxBoxSizer(wxVERTICAL);
-  wxBoxSizer* chat_box_sizer = new wxBoxSizer(wxVERTICAL);
-  this->window_panel->SetSizer(main_window_sizer);
+  auto* main_window_sizer = new wxBoxSizer(wxHORIZONTAL);
+  auto* board_panel_sizer = new wxBoxSizer(wxHORIZONTAL);
+  auto* information_region_sizer = new wxBoxSizer(wxVERTICAL);
+  auto* pgn_view_sizer = new wxBoxSizer(wxVERTICAL);
+  auto* chat_box_sizer = new wxBoxSizer(wxVERTICAL);
+  this->m_window_panel->SetSizer(main_window_sizer);
   main_window_sizer->Add(board_panel_sizer, 1, wxSHAPED);
   main_window_sizer->Add(information_region_sizer, 0);
   information_region_sizer->Add(pgn_view_sizer, 1);
   information_region_sizer->Add(chat_box_sizer, 1);
 
   // Create chessboard panel
-  this->board_panel_id = wxWindow::NewControlId(1);
-
-  this->board_panel = new BoardPanel(window_panel, board_panel_id);
-  this->board_panel->SetBackgroundColour(wxColor("#ededed"));
-  board_panel_sizer->Add(this->board_panel, 1, wxEXPAND | wxALL, 10);
-  // this->window_panel->SetSizer(board_panel_sizer);
+  this->m_board_panel->SetBackgroundColour(wxColor("#ededed"));
+  board_panel_sizer->Add(this->m_board_panel, 1, wxEXPAND | wxALL, 10);
 
   // Finish startup
   SetStatusText("Athena loaded successfully!");
-  Bind(wxEVT_MENU, &UI::MainWindow::OnAbout, this, wxID_ABOUT);
-  Bind(wxEVT_MENU, &UI::MainWindow::OnExit, this, wxID_EXIT);
-  // Bind(wxEVT_SIZE, &UI::MainWiondow::onMainWindowResize, this);
+  Bind(wxEVT_MENU, &ui::main_window::on_about, this, wxID_ABOUT);
+  Bind(wxEVT_MENU, &ui::main_window::on_exit, this, wxID_EXIT);
 }
 
-void UI::MainWindow::OnExit(wxCommandEvent& event)
+void ui::main_window::on_exit(wxCommandEvent&  /*event*/)
 {
   Close(true);
 }
 
-void UI::MainWindow::OnAbout(wxCommandEvent& event)
+void ui::main_window::on_about(wxCommandEvent&  /*event*/)
 {
   std::string version = "Athena version ";
   version += std::to_string(ATHENA_VERSION_MAJOR);
@@ -89,42 +91,41 @@ void UI::MainWindow::OnAbout(wxCommandEvent& event)
   wxMessageBox(message, "About Athena", wxOK | wxICON_INFORMATION);
 }
 
-// void UI::MainWindow::onMainWindowResize(wxSizeEvent& event)
+// void ui::MainWindow::onMainWindowResize(wxSizeEvent& event)
 //{
 //     wxSize windowSize = event.GetSize();
 //     this->
 // }
 
-UI::BoardPanel::BoardPanel(wxWindow* win, wxWindowID id)
+ui::board_panel::board_panel(wxWindow* win, wxWindowID id)
     : wxPanel(win, id)
 {
   // Initialize game logic
-  this->game_system = std::make_unique<core::chessgame>();
+  this->m_game_system = std::make_unique<core::chessgame>();
 
   // Load images and spacing
-  this->loadImages();
-  wxGridSizer* board_grid_sizer = new wxGridSizer(8, 8, 0, 0);
-  for (auto iter = board_squares.begin(); iter != board_squares.end(); ++iter) {
-    iter->square_panel = new wxPanel(this, wxID_ANY);
-    iter->square_panel->SetTransparent(0);
-    board_grid_sizer->Add(iter->square_panel, 1, wxEXPAND | wxALL, 0);
+  this->load_images();
+  auto* board_grid_sizer = new wxGridSizer(8, 8, 0, 0);
+  for (auto & m_board_square : m_board_squares) {
+    m_board_square.square_panel = new wxPanel(this, wxID_ANY);
+    m_board_square.square_panel->SetTransparent(0);
+    board_grid_sizer->Add(m_board_square.square_panel, 1, wxEXPAND | wxALL, 0);
   }
   this->SetSizer(board_grid_sizer);
 
-  // synchronize board state with UI
+  // synchronize board state with ui
   for (int iter = 0; iter < 64; ++iter) {
-    board_squares[iter].piece_type =
-        (core::piece_t)this->game_system->identify_piece(iter);
+    m_board_squares[iter].piece_type = this->m_game_system->identify_piece(iter);
   }
   board_grid_sizer->Layout();
 
   // Bind drawing events to appropriate handlers
-  Bind(wxEVT_SIZE, &UI::BoardPanel::onBoardPanelResize, this);
-  Bind(wxEVT_ERASE_BACKGROUND, &UI::BoardPanel::clearBackground, this);
-  Bind(wxEVT_PAINT, &UI::BoardPanel::paintEventHandler, this);
+  Bind(wxEVT_SIZE, &ui::board_panel::on_boand_panel_resize, this);
+  Bind(wxEVT_ERASE_BACKGROUND, &ui::board_panel::clear_background, this);
+  Bind(wxEVT_PAINT, &ui::board_panel::paint_event_handler, this);
 }
 
-void UI::BoardPanel::loadImages()
+void ui::board_panel::load_images()
 {
   // load chessboard image
   wxString message("Loading board image in directory ");
@@ -133,129 +134,131 @@ void UI::BoardPanel::loadImages()
   img_path.AppendDir("data");
   img_path.SetName("chessboard");
   img_path.SetExt("png");
-  this->board_image = new wxImage();
-  if (!this->board_image->LoadFile(
+  this->m_board_image = new wxImage();
+  if (!this->m_board_image->LoadFile(
           img_path.GetFullPath(), wxBITMAP_TYPE_PNG, -1))
   {
     wxMessageBox("Unable to load file");
   }
 
   // Load piece images
-  std::array<std::string, 6> generalPieceNames = {
+  std::array<std::string, 6> general_piece_names = {
       "pawn", "rook", "bishop", "knight", "queen", "king"};
   std::array<std::string, 2> colors = {"w", "b"};
-  std::array<imageInfo, 12>::iterator image_iter = piece_images.begin();
+  auto image_iter = m_piece_images.begin();
   std::string filename;
-  wxFileName tempFilename;
-  for (auto name = generalPieceNames.begin(); name != generalPieceNames.end();
-       ++name)
+  wxFileName temp_filename;
+  for (auto & general_piece_name : general_piece_names)
   {
-    for (auto color = colors.begin(); color != colors.end(); ++color) {
-      filename = std::string(*color);
+    for (auto & color : colors) {
+      filename = std::string(color);
       filename.append("_");
-      filename.append(*name);
-      tempFilename = wxFileName::DirName(ATHENA_BINARY_DIR);
-      tempFilename.AppendDir("data");
-      tempFilename.SetName(filename);
-      tempFilename.SetExt("png");
+      filename.append(general_piece_name);
+      temp_filename = wxFileName::DirName(ATHENA_BINARY_DIR);
+      temp_filename.AppendDir("data");
+      temp_filename.SetName(filename);
+      temp_filename.SetExt("png");
       image_iter->filename = filename;
       image_iter->image = new wxImage();
       image_iter->image->LoadFile(
-          tempFilename.GetFullPath(), wxBITMAP_TYPE_PNG, -1);
+          temp_filename.GetFullPath(), wxBITMAP_TYPE_PNG, -1);
 
-      if (*name == "pawn") {
-        if (*color == "w")
+      if (general_piece_name == "pawn") {
+        if (color == "w") {
           image_iter->piece_type = core::white_pawn;
-        else
+        } else {
           image_iter->piece_type = core::black_pawn;
-      } else if (*name == "rook") {
-        if (*color == "w")
+        }
+      } else if (general_piece_name == "rook") {
+        if (color == "w") {
           image_iter->piece_type = core::white_rook;
-        else
+        } else {
           image_iter->piece_type = core::black_rook;
-      } else if (*name == "bishop") {
-        if (*color == "w")
+        }
+      } else if (general_piece_name == "bishop") {
+        if (color == "w") {
           image_iter->piece_type = core::white_bishop;
-        else
+        } else {
           image_iter->piece_type = core::black_bishop;
-      } else if (*name == "knight") {
-        if (*color == "w")
+        }
+      } else if (general_piece_name == "knight") {
+        if (color == "w") {
           image_iter->piece_type = core::white_knight;
-        else
+        } else {
           image_iter->piece_type = core::black_knight;
-      } else if (*name == "queen") {
-        if (*color == "w")
+        }
+      } else if (general_piece_name == "queen") {
+        if (color == "w") {
           image_iter->piece_type = core::white_queen;
-        else
+        } else {
           image_iter->piece_type = core::black_queen;
-      } else if (*name == "king") {
-        if (*color == "w")
+        }
+      } else if (general_piece_name == "king") {
+        if (color == "w") {
           image_iter->piece_type = core::white_king;
-        else
+        } else {
           image_iter->piece_type = core::black_king;
-      } else
+        }
+      } else {
         image_iter->piece_type = core::empty_square;
+        }
       ++image_iter;
     }
   }
 }
 
-void UI::BoardPanel::onBoardPanelResize(wxSizeEvent& event)
+void ui::board_panel::on_boand_panel_resize(wxSizeEvent& event)
 {
   this->Refresh();
-  for (auto iter = board_squares.begin(); iter != board_squares.end(); ++iter) {
-    iter->square_panel->Refresh();
+  for (auto & m_board_square : m_board_squares) {
+    m_board_square.square_panel->Refresh();
   }
   event.Skip();
 }
 
-void UI::BoardPanel::render(wxDC& dc)
+void ui::board_panel::render(wxDC& dc)
 {
   auto width = dc.GetSize().GetWidth();
   auto height = dc.GetSize().GetHeight();
-  auto minSize = (width < height) ? width : height;
+  auto min_size = (width < height) ? width : height;
 
   // Draw the board
-  wxImage tempImage = this->board_image->Scale(minSize, minSize);
-  wxBitmap tempBitmap(tempImage);
-  dc.DrawBitmap(tempBitmap, 0, 0);
+  wxImage temp_image = this->m_board_image->Scale(min_size, min_size);
+  wxBitmap temp_bitmap(temp_image);
+  dc.DrawBitmap(temp_bitmap, 0, 0);
 
   // Draw the pieces
-  wxImage tempPieceImage;
-  wxBitmap tempPieceBitmap;
+  wxImage temp_piece_image;
+  wxBitmap temp_piece_bitmap;
   core::piece_t piece_type;
   int indx;
   for (int iter = 0; iter < 64; ++iter) {
-    piece_type = (core::piece_t)this->game_system->identify_piece(iter);
+    piece_type = this->m_game_system->identify_piece(iter);
     // Don't bother drawing empty squares
-    if (piece_type == core::empty_square)
-      continue;
+    if (piece_type == core::empty_square) { continue;}
     for (indx = 0; indx < 12; ++indx) {
-      // std::cout << (char) piece_images[indx].piece_type << " " << indx <<
-      // std::endl;
-      if (piece_images[indx].piece_type == piece_type)
-        break;
+      if (m_piece_images[indx].piece_type == piece_type) { break; }
     }
-    tempPieceImage = piece_images[indx].image->Scale(minSize / 8, minSize / 8);
-    tempPieceBitmap = wxBitmap(tempPieceImage);
-    wxClientDC square_dc(board_squares[iter].square_panel);
-    square_dc.DrawBitmap(tempPieceBitmap, 2, 2);
+    temp_piece_image = m_piece_images[indx].image->Scale(min_size / 8, min_size / 8);
+    temp_piece_bitmap = wxBitmap(temp_piece_image);
+    wxClientDC square_dc(m_board_squares[iter].square_panel);
+    square_dc.DrawBitmap(temp_piece_bitmap, 2, 2);
   }
 }
 
-void UI::BoardPanel::paintEventHandler(wxPaintEvent& event)
+void ui::board_panel::paint_event_handler(wxPaintEvent&  /*event*/)
 {
   wxPaintDC dc(this);
   render(dc);
 }
 
-void UI::BoardPanel::paintNow()
+void ui::board_panel::paint_now()
 {
   wxClientDC dc(this);
   this->render(dc);
 }
 
-void UI::BoardPanel::clearBackground(wxEraseEvent& event)
+void ui::board_panel::clear_background(wxEraseEvent& event)
 {
   wxDC* dc = event.GetDC();
   dc->Clear();

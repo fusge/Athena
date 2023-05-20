@@ -11,68 +11,70 @@
 
 #include "chessgame.h"
 
-namespace UI
+namespace ui
 {
-  struct imageInfo{
+  constexpr int default_width = 600;
+  constexpr int default_height = 600;
+  struct image_info{
     core::piece_t piece_type;
     wxFileName filename;
     wxImage *image;
   };
 
-  struct boardSquare{
+  struct board_square{
     core::piece_t piece_type;
     wxPanel *square_panel;
   };
 
-  class Athena : public wxApp
+  class athena : public wxApp
   {
   public:
-    virtual bool OnInit();
+     bool OnInit() override;
   };
 
-  class BoardPanel : public wxPanel
+  class board_panel : public wxPanel
   {
   public:
-    BoardPanel(wxWindow * win, wxWindowID id);
+    board_panel(wxWindow * win, wxWindowID id);
     
-    void loadImages();
+    void load_images();
     void render(wxDC &dc);
-    void paintNow(); 
+    void paint_now(); 
 
     // Event Handler functions
-    void paintEventHandler(wxPaintEvent &event);
-    void clearBackground(wxEraseEvent &event);
-    void onBoardPanelResize(wxSizeEvent &event);
+    void paint_event_handler(wxPaintEvent &event);
+    void clear_background(wxEraseEvent &event);
+    void on_boand_panel_resize(wxSizeEvent &event);
 
     //std::array<std::string *, 12> filenames;
 
   private:
     // Piece and board images
-    wxImage* board_image;
-    std::array<imageInfo, 12> piece_images;
-    std::array<UI::boardSquare, 64> board_squares;
+    wxImage* m_board_image;
+    std::array<image_info, 12> m_piece_images;
+    std::array<ui::board_square, 64> m_board_squares;
 
     // Game core System
-    std::unique_ptr<core::chessgame> game_system;
+    std::unique_ptr<core::chessgame> m_game_system;
   };
 
-  class MainWindow : public wxFrame
+  class main_window : public wxFrame
   {
   public:
-    MainWindow();
+    main_window();
     
   private:
     // we have to manage window ids
-    wxWindowID board_panel_id;
+    wxWindowID m_board_panel_id;
 
     // window parts
-    wxPanel* window_panel;
-    UI::BoardPanel* board_panel;
+    wxPanel* m_window_panel;
+    ui::board_panel* m_board_panel;
 
-    void OnExit(wxCommandEvent& event);
-    void OnAbout(wxCommandEvent& event);
+    void on_exit(wxCommandEvent& event);
+    void on_about(wxCommandEvent& event);
   };
-}
+} // namespace ui
 
-wxDECLARE_APP(UI::Athena);
+wxDECLARE_APP(ui::athena);
 #endif /* main_window_h */
