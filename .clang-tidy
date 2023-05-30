@@ -3,6 +3,9 @@
 # misc-non-private-member-variables-in-classes: the options don't do anything
 # modernize-use-nodiscard: too aggressive, attribute is situationally useful
 Checks: "*,\
+  -cppcoreguidelines-avoid-magic-numbers,\
+  -misc-no-recursion,\
+  -readability-magic-numbers,\
   -modernize-use-trailing-return-type,\
   -google-readability-todo,\
   -altera-*,\

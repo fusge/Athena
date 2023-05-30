@@ -12,7 +12,7 @@
 namespace core {
 
 using coordinates = struct coordinates {
-  coordinates(char column, char row) : file(column), rank(row) {} 
+  coordinates(char column, char row) noexcept: file(column), rank(row) {} 
   char file;
   char rank;
   bool operator==(const coordinates& rhs) const {
@@ -37,8 +37,8 @@ struct movenode {
   int on_move = 0;
   std::string pgn_move_played;
   coordinates move_played = {'-', '-'};
-  int prev_move_id = 0;
-  std::vector<int> sidelines;
+  size_t prev_move_id = 0;
+  std::vector<size_t> sidelines;
 };
 
 enum piece_t {
@@ -81,15 +81,25 @@ class chessgame {
   private:
   std::array<std::array<core::piece_t , max_board_range>, max_board_range> m_board;
   std::vector<movenode> m_game_tree;
-  uint32_t m_current_position_id;
+  size_t m_current_position_id;
 
   void draw_line(std::vector<core::coordinates>& coord_list, std::pair<int, int> direction, bool iterate);
+
+  // following functions are for finding available moves for given piece
   std::vector<coordinates> get_available_moves(coordinates square, char piece);
+  
+  std::vector<coordinates> get_available_queen_moves(coordinates square);
+  std::vector<coordinates> get_available_king_moves(coordinates square);
+  std::vector<coordinates> get_available_pawn_moves(coordinates square);
+  std::vector<coordinates> get_available_rook_moves(coordinates square);
+  std::vector<coordinates> get_available_bishop_moves(coordinates square);
+  std::vector<coordinates> get_available_knight_moves(coordinates square);
+
   bool is_valid_capture(std::pair<coordinates, coordinates> move_set);
   bool king_in_check(std::pair<coordinates, coordinates> move_set, char color);
   bool piece_pinned(std::pair<coordinates, coordinates> move_set);
   void update_board(std::pair<coordinates, coordinates> move_set);
-  int find_available_tree_id();
+  size_t find_available_tree_id();
   core::coordinates find_king(char color);
 
 };

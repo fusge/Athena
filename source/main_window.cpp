@@ -21,7 +21,7 @@ bool ui::athena::OnInit()
 }
 
 ui::main_window::main_window()
-    : wxFrame(NULL, 
+    : wxFrame(nullptr, 
               wxID_ANY, 
               "Athena", 
               wxDefaultPosition, 
