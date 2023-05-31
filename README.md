@@ -1,6 +1,6 @@
-# Athena
+# athena
 
-This is the Athena project.
+This is the athena project.
 
 # Building and installing
 

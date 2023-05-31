@@ -1,6 +1,6 @@
 install(
     TARGETS athena_exe
-    RUNTIME COMPONENT Athena_Runtime
+    RUNTIME COMPONENT athena_Runtime
 )
 
 if(PROJECT_IS_TOP_LEVEL)
