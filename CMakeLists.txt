@@ -32,7 +32,7 @@ endif()
 
 # ---- Developer mode ----
 
-if(NOT Athena_DEVELOPER_MODE)
+if(NOT athena_DEVELOPER_MODE)
   return()
 elseif(NOT PROJECT_IS_TOP_LEVEL)
   message(
