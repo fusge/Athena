@@ -9,7 +9,7 @@ guide.
 ## Developer mode
 
 Build system targets that are only useful for developers of this project are
-hidden if the `athena_DEVELOPER_MODE` option is disabled. Enabling this
+hidden if the `Athena_DEVELOPER_MODE` option is disabled. Enabling this
 option makes tests and other developer targets and options available. Not
 enabling this option means that you are a consumer of this project and thus you
 have no need for these targets and options.
@@ -23,7 +23,7 @@ the project. As a developer, you are recommended to always have the [latest
 CMake version][2] installed to make use of the latest Quality-of-Life
 additions.
 
-You have a few options to pass `athena_DEVELOPER_MODE` to the configure
+You have a few options to pass `Athena_DEVELOPER_MODE` to the configure
 command, but this project prefers to use presets.
 
 As a developer, you should create a `CMakeUserPresets.json` file at the root of
@@ -41,7 +41,7 @@ the project:
     {
       "name": "dev",
       "binaryDir": "${sourceDir}/build/dev",
-      "inherits": ["dev-mode", "vcpkg", "ci-<os>"],
+      "inherits": ["dev-mode", "conan", "ci-<os>"],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
@@ -76,16 +76,34 @@ can see what these correspond to in the
 sorts of things that you would otherwise want to pass to the configure command
 in the terminal.
 
+> **Note**
+> Some editors are pretty greedy with how they open projects with presets.
+> Some just randomly pick a preset and start configuring without your consent,
+> which can be confusing. Make sure that your editor configures when you
+> actually want it to, for example in CLion you have to make sure only the
+> `dev-dev preset` has `Enable profile` ticked in
+> `File > Settings... > Build, Execution, Deployment > CMake` and in Visual
+> Studio you have to set the option `Never run configure step automatically`
+> in `Tools > Options > CMake` **prior to opening the project**, after which
+> you can manually configure using `Project > Configure Cache`.
+
 ### Dependency manager
 
-The above preset will make use of the [vcpkg][vcpkg] dependency manager. After
-installing it, make sure the `VCPKG_ROOT` environment variable is pointing at
-the directory where the vcpkg executable is. On Windows, you might also want
-to inherit from the `vcpkg-win64-static` preset, which will make vcpkg install
-the dependencies as static libraries. This is only necessary if you don't want
-to setup `PATH` to run tests.
+The above preset will make use of the [conan][conan] dependency manager. After
+installing it, make sure you have a [Conan profile][profile] setup, then
+download the dependencies and generate the necessary CMake files by running
+this command in the project root:
 
-[vcpkg]: https://github.com/microsoft/vcpkg
+```sh
+conan install . -s build_type=Debug -b missing
+```
+
+Note that if your conan profile does not specify the same compiler, standard
+level, build type and runtime library as CMake, then that could potentially
+cause issues. See the link above for profiles documentation.
+
+[conan]: https://conan.io/
+[profile]: https://docs.conan.io/2/reference/config_files/profiles.html
 
 ### Configure, build and test
 
@@ -137,7 +155,7 @@ fix them respectively. Customization available using the `FORMAT_PATTERNS` and
 
 #### `run-exe`
 
-Runs the executable target `athena_exe`.
+Runs the executable target `Athena_exe`.
 
 #### `spell-check` and `spell-fix`
 

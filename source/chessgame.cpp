@@ -34,7 +34,7 @@ void core::chessgame::set_board(std::string fen)
         fen_iter++;
       }
       if (isdigit(*fen_iter) > 0) {
-        emptysquares = (*fen_iter) - '0';  // Damn you ascii;
+        emptysquares = (*fen_iter) - '1';  // Damn you ascii;
         col += static_cast<size_t>(emptysquares);
         fen_iter++;
       } else {
@@ -142,14 +142,14 @@ std::string core::chessgame::get_fen()
         empty_squares++;
       } else {
         if (empty_squares != 0) {
-          fen += static_cast<char>(empty_squares + '0');
+          fen += static_cast<char>(empty_squares + '1');
           empty_squares = 0;
         }
         fen += std::to_string(this->m_board.at(static_cast<size_t>(row)).at(col));
       }
     }
     if (empty_squares != 0) {
-      fen += static_cast<char>(empty_squares + '0');
+      fen += static_cast<char>(empty_squares + '1');
       empty_squares = 0;
     }
     fen += '/';
@@ -192,7 +192,7 @@ void core::chessgame::draw_line(
     bool iterate)
 {
   const int col = coord_list.back().file - 'a' + direction.first;
-  const int row = coord_list.back().rank - '0' + direction.second;
+  const int row = coord_list.back().rank - '1' + direction.second;
   if (row < 0 || row > core::max_board_range-1 || col < 0 || col > core::max_board_range-1){
     return;
   }
@@ -385,7 +385,8 @@ std::vector<core::coordinates> core::chessgame::get_available_moves(core::coordi
 core::piece_t core::chessgame::identify_piece(core::coordinates coord)
 {
   const int col = coord.file - 'a';
-  const int row = coord.rank - '0';
+  const int row = coord.rank - '1';
+  std::cout << col << " " << row << std::endl;
   return this->m_board.at(static_cast<size_t>(row)).at(static_cast<size_t>(col));
 }
 
@@ -408,13 +409,13 @@ void core::chessgame::show_possible_moves(core::coordinates square)
   for (int row = core::max_board_range; row >= 0; row--) {
     allowed_moves_board.at(static_cast<size_t>(row)).fill(core::empty_square);
   }
-  int row = square.rank - '0';
+  int row = square.rank - '1';
   int col = square.file - 'a';
   allowed_moves_board.at(static_cast<size_t>(row)).at(static_cast<size_t>(col)) = piece;
 
   for (auto choices_iter : choices)
   {
-    row = choices_iter.rank - '0';
+    row = choices_iter.rank - '1';
     col = choices_iter.file - 'a';
     if (allowed_moves_board.at(static_cast<size_t>(row)).at(static_cast<size_t>(col)) != core::empty_square) { continue; }
     allowed_moves_board.at(static_cast<size_t>(row)).at(static_cast<size_t>(col)) = 'X';
@@ -444,6 +445,7 @@ int core::chessgame::play_move(std::pair<coordinates, coordinates> move_set)
   const core::coordinates start_square = move_set.first;
   const core::coordinates end_square = move_set.second;
   const core::piece_t piece = identify_piece(start_square);
+  std::cout << piece << std::endl;
   bool match = false;
   const std::vector<core::coordinates> choices = get_available_moves(start_square, piece);
   for (const auto & choice : choices) {
@@ -511,7 +513,7 @@ core::coordinates core::chessgame::find_king(char color)
       for (size_t col = 0; col < core::max_board_range; col++) {
         if (m_board.at(row).at(col) == piece) {
           square.file = static_cast<char>(col + 'a');
-          square.rank = static_cast<char>(row + '0');
+          square.rank = static_cast<char>(row + '1');
         }
       }
     }
@@ -542,9 +544,9 @@ void core::chessgame::update_board(std::pair<core::coordinates, core::coordinate
   added_movenode.captured_piece = identify_piece(move_set.second);
 
   // Update board
-  auto start_row = static_cast<size_t>(start_square.rank - '0');
+  auto start_row = static_cast<size_t>(start_square.rank - '1');
   auto start_col = static_cast<size_t>(start_square.file - 'a');
-  auto end_row = static_cast<size_t>(end_square.rank - '0');
+  auto end_row = static_cast<size_t>(end_square.rank - '1');
   auto end_col = static_cast<size_t>(end_square.file - 'a');
   m_board.at(start_row).at(start_col) = core::empty_square;
   added_movenode.captured_piece = m_board.at(end_row).at(end_col);
@@ -659,7 +661,7 @@ std::string core::chessgame::get_pgn()
     }
     position_id = m_game_tree[position_id].sidelines[0];
     if (m_game_tree[position_id].color_to_move == core::black_bishop) {
-      pgn.push_back(static_cast<char>(m_game_tree[position_id].on_move + '0'));
+      pgn.push_back(static_cast<char>(m_game_tree[position_id].on_move + '1'));
       pgn += ".";
     }
   }

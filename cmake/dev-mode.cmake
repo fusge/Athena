@@ -7,10 +7,10 @@ endif()
 
 add_custom_target(
     run-exe
-    COMMAND athena_exe
+    COMMAND Athena_exe
     VERBATIM
 )
-add_dependencies(run-exe athena_exe)
+add_dependencies(run-exe Athena_exe)
 
 option(BUILD_MCSS_DOCS "Build documentation using Doxygen and m.css" OFF)
 if(BUILD_MCSS_DOCS)

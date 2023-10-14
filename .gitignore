@@ -9,3 +9,4 @@ CMakeLists.txt.user
 CMakeUserPresets.json
 .cache/
 compile_commands.json
+conan/

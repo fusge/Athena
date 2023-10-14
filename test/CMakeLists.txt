@@ -1,20 +1,28 @@
 # CMakeList.txt : CMake project for chesspeer test
 #
-cmake_minimum_required (VERSION 3.25)
+# Parent project does not export its library target, so this CML implicitly
+# depends on being added from it, i.e. the testing is done only from the build
+# tree and is not feasible from an install location
 
-find_package(GTest REQUIRED)
-# For Windows: Prevent overriding the parent project's compiler/linker settings
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+project(AthenaTests LANGUAGES CXX)
 
-enable_testing()
-# Add source to this project's executable.
-add_executable (AthenaTests
-    athenaTests.cpp
+# ---- Dependencies ----
+
+find_package(Catch2 REQUIRED)
+include(Catch)
+
+# ---- Tests ----
+
+add_executable(athena_test athenaTests.cpp)
+target_link_libraries(
+    athena_test PRIVATE
+    athena_lib
+    Catch2::Catch2WithMain
 )
+target_compile_features(athena_test PRIVATE cxx_std_20)
 
-target_link_libraries(AthenaTests PUBLIC gtest gtest_main)
+catch_discover_tests(athena_test)
 
-add_test(
-    NAME AtheanTests
-    COMMAND AthenaTests
-)
+# ---- End-of-file commands ----
+
+add_folders(Test)

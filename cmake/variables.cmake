@@ -1,11 +1,11 @@
 # ---- Developer mode ----
 
 # Developer mode enables targets and code paths in the CMake scripts that are
-# only relevant for the developer(s) of athena
+# only relevant for the developer(s) of Athena
 # Targets necessary to build the project must be provided unconditionally, so
 # consumers can trivially build and package the project
 if(PROJECT_IS_TOP_LEVEL)
-  option(athena_DEVELOPER_MODE "Enable developer mode" OFF)
+  option(Athena_DEVELOPER_MODE "Enable developer mode" OFF)
 endif()
 
 # ---- Warning guard ----
@@ -17,12 +17,12 @@ endif()
 set(warning_guard "")
 if(NOT PROJECT_IS_TOP_LEVEL)
   option(
-      athena_INCLUDES_WITH_SYSTEM
-      "Use SYSTEM modifier for athena's includes, disabling warnings"
+      Athena_INCLUDES_WITH_SYSTEM
+      "Use SYSTEM modifier for Athena's includes, disabling warnings"
       ON
   )
-  mark_as_advanced(athena_INCLUDES_WITH_SYSTEM)
-  if(athena_INCLUDES_WITH_SYSTEM)
+  mark_as_advanced(Athena_INCLUDES_WITH_SYSTEM)
+  if(Athena_INCLUDES_WITH_SYSTEM)
     set(warning_guard SYSTEM)
   endif()
 endif()

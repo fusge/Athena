@@ -2,7 +2,7 @@
 
 ## Dependencies
 
-For a list of dependencies, please refer to [vcpkg.json](vcpkg.json).
+For a list of dependencies, please refer to [conanfile.py](conanfile.py).
 
 ## Build
 

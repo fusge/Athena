@@ -1,7 +1,6 @@
-#include <gtest/gtest.h>
+#include <catch2/catch_test_macros.hpp>
 
-int main()
+TEST_CASE("Name is Athena", "[library]")
 {
-  ::testing::InitGoogleTest();
-  return RUN_ALL_TESTS();
+  REQUIRE(true == true);
 }

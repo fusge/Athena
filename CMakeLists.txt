@@ -9,7 +9,7 @@ project(
 )
 
 # ---- Declare Dependencies ----
-find_package(wxWidgets REQUIRED COMPONENTS base core net)
+# find_package(Qt REQUIRED COMPONENTS core widgets)
 
 list(APPEND CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

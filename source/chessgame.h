@@ -41,7 +41,7 @@ struct movenode {
   std::vector<size_t> sidelines;
 };
 
-enum piece_t {
+enum piece_t : char{
   white_pawn = 'P',
   white_knight = 'N',
   white_bishop = 'B',

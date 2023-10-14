@@ -1,6 +1,4 @@
-#define ATHENA_VERSION_MAJOR @Athena_VERSION_MAJOR@
-#define ATHENA_VERSION_MINOR @Athena_VERSION_MINOR@
-#define ATHENA_VERSION_PATCH @Athena_VERSION_PATCH@
-
-#define ATHENA_BINARY_DIR "@Athena_BINARY_DIR@"
+constexpr int athena_version_major = @Athena_VERSION_MAJOR@;
+constexpr int athena_version_minor = @Athena_VERSION_MINOR@;
+constexpr int athena_version_patch = @Athena_VERSION_PATCH@;
 
