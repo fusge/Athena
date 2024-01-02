@@ -9,7 +9,7 @@ int main() {
   std::cout << "Chesspeer VERSION " ;
   std::cout << athena_version_major << ".";
   std::cout << athena_version_minor << ".";
-  std::cout << athena_version_patch << std::endl;
+  std::cout << athena_version_patch << "\n";
 
   auto mychessboard = core::chessgame();
   std::string moves;
@@ -19,11 +19,11 @@ int main() {
     if(moves.size() != 4){
       std::cout << "Please enter move in the format: \n";
       std::cout << " <startfile><startrow><endfile><endrow>\n";
-      std::cout << "e.g. e4 -> e2e4" << std::endl;
+      std::cout << "e.g. e4 -> e2e4" << "\n";
       continue;
     }
     mychessboard.play_move({{moves[0], moves[1]}, {moves[2], moves[3]}});
     mychessboard.show(/*flipped=*/false);
-    std::cout << mychessboard.get_pgn() << std::endl;
+    std::cout << mychessboard.get_pgn() << "\n";
   }
 }

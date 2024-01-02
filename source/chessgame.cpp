@@ -1,7 +1,6 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
-#include <iterator>
 
 #include "chessgame.h"
 
@@ -22,7 +21,7 @@ void core::chessgame::set_board(std::string fen)
     board_row.fill(core::empty_square);
   }
 
-  std::cout << "Reading the standard fen string..." << std::endl;
+  std::cout << "Reading the standard fen string...\n";
   std::string::iterator fen_iter = fen.begin();
   int emptysquares=0;
   movenode game_node = movenode();
@@ -104,7 +103,7 @@ void core::chessgame::show(bool flipped)
       for (size_t col = 0; col < max_board_range; col++) {
         std::cout << '[' << this->m_board.at(static_cast<size_t>(row)).at(col) << ']';
       }
-      std::cout << std::endl;
+      std::cout << "\n";
     }
   } else {
     for (size_t row = 0; row < core::max_board_range; row++) {
@@ -112,7 +111,7 @@ void core::chessgame::show(bool flipped)
       for (int col = max_board_range - 1; col >= 0; col--) {
         std::cout << '[' << this->m_board.at(row).at(static_cast<size_t>(col)) << ']';
       }
-      std::cout << std::endl;
+      std::cout << "\n";
     }
   }
   std::cout << "   ";
@@ -126,10 +125,10 @@ void core::chessgame::show(bool flipped)
     }
   }
 
-  std::cout << std::endl;
+  std::cout << "\n";
   std::cout << m_game_tree[m_current_position_id].color_to_move << " to move"
-            << std::endl;
-  std::cout << "on move " << m_game_tree[m_current_position_id].on_move << std::endl;
+            << "\n";
+  std::cout << "on move " << m_game_tree[m_current_position_id].on_move << "\n";
 }
 
 std::string core::chessgame::get_fen()
@@ -386,7 +385,7 @@ core::piece_t core::chessgame::identify_piece(core::coordinates coord)
 {
   const int col = coord.file - 'a';
   const int row = coord.rank - '1';
-  std::cout << col << " " << row << std::endl;
+  std::cout << col << " " << row << "\n";
   return this->m_board.at(static_cast<size_t>(row)).at(static_cast<size_t>(col));
 }
 
@@ -438,14 +437,14 @@ int core::chessgame::play_move(std::pair<coordinates, coordinates> move_set)
   //if (move_set.length() != 4) {
   //  std::cout << "Please enter move in the format: \n";
   //  std::cout << " <startfile><startrow><endfile><endrow>\n";
-  //  std::cout << "e.g. e4 -> e2e4" << std::endl;
+  //  std::cout << "e.g. e4 -> e2e4" << "\n";
   //  return 1;
   //}
   // get source and destination strings and check for available moves
   const core::coordinates start_square = move_set.first;
   const core::coordinates end_square = move_set.second;
   const core::piece_t piece = identify_piece(start_square);
-  std::cout << piece << std::endl;
+  std::cout << piece << "\n";
   bool match = false;
   const std::vector<core::coordinates> choices = get_available_moves(start_square, piece);
   for (const auto & choice : choices) {
