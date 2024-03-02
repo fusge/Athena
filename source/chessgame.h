@@ -1,29 +1,33 @@
 #ifndef CHESSGAME_H
 #define CHESSGAME_H
 
-#include <cstddef>
-#include <vector>
 #include <array>
+#include <cstddef>
 #include <string>
-#include <list>
 #include <utility>
-#include <memory>
+#include <vector>
 
-namespace core {
+namespace core
+{
 
-using coordinates = struct coordinates {
-  coordinates(char column, char row) noexcept: file(column), rank(row) {} 
+using coordinates = struct coordinates
+{
+  coordinates(char column, char row) noexcept
+      : file(column)
+      , rank(row)
+  {
+  }
   char file;
   char rank;
-  bool operator==(const coordinates& rhs) const {
+  bool operator==(const coordinates& rhs) const
+  {
     return (this->file == rhs.file) && (this->rank == rhs.rank);
   }
-  bool operator!=(const coordinates& rhs) const {
-    return !operator==(rhs);
-  }
+  bool operator!=(const coordinates& rhs) const { return !operator==(rhs); }
 };
 
-struct movenode {
+struct movenode
+{
   bool linked = true;
   int ply = 0;
   char color_to_move = 'w';
@@ -41,7 +45,8 @@ struct movenode {
   std::vector<size_t> sidelines;
 };
 
-enum piece_t : char{
+enum piece_t : char
+{
   white_pawn = 'P',
   white_knight = 'N',
   white_bishop = 'B',
@@ -60,10 +65,11 @@ enum piece_t : char{
 constexpr int max_board_range = 8;
 constexpr char white_color = 'w';
 constexpr char black_color = 'b';
-const coordinates white_king_starting_square {'e','1'};
-const coordinates black_king_starting_square {'e','8'};
-class chessgame {
-  public:
+const coordinates white_king_starting_square {'e', '1'};
+const coordinates black_king_starting_square {'e', '8'};
+class chessgame
+{
+public:
   chessgame();
   explicit chessgame(std::string fen);
 
@@ -78,16 +84,19 @@ class chessgame {
   void show(bool flipped);
   void show_possible_moves(coordinates square);
 
-  private:
-  std::array<std::array<core::piece_t , max_board_range>, max_board_range> m_board;
+private:
+  std::array<std::array<core::piece_t, max_board_range>, max_board_range>
+      m_board;
   std::vector<movenode> m_game_tree;
   size_t m_current_position_id;
 
-  void draw_line(std::vector<core::coordinates>& coord_list, std::pair<int, int> direction, bool iterate);
+  void draw_line(std::vector<core::coordinates>& coord_list,
+                 std::pair<int, int> direction,
+                 bool iterate);
 
   // following functions are for finding available moves for given piece
   std::vector<coordinates> get_available_moves(coordinates square, char piece);
-  
+
   std::vector<coordinates> get_available_queen_moves(coordinates square);
   std::vector<coordinates> get_available_king_moves(coordinates square);
   std::vector<coordinates> get_available_pawn_moves(coordinates square);
@@ -101,8 +110,7 @@ class chessgame {
   void update_board(std::pair<coordinates, coordinates> move_set);
   size_t find_available_tree_id();
   core::coordinates find_king(char color);
-
 };
-} // namespace core
+}  // namespace core
 
 #endif

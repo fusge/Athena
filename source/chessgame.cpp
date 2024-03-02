@@ -4,30 +4,35 @@
 
 #include "chessgame.h"
 
-core::chessgame::chessgame() : m_board(), m_current_position_id(1)
+core::chessgame::chessgame()
+    : m_board()
+    , m_current_position_id(1)
 {
-  const std::string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+  const std::string fen =
+      "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
   this->set_board(fen);
 }
 
-core::chessgame::chessgame(std::string fen) : m_board(), m_current_position_id(0)
+core::chessgame::chessgame(std::string fen)
+    : m_board()
+    , m_current_position_id(0)
 {
   this->set_board(std::move(fen));
 }
 
 void core::chessgame::set_board(std::string fen)
 {
-  for (auto& board_row: this->m_board) {
+  for (auto& board_row : this->m_board) {
     board_row.fill(core::empty_square);
   }
 
   std::cout << "Reading the standard fen string...\n";
   std::string::iterator fen_iter = fen.begin();
-  int emptysquares=0;
+  int emptysquares = 0;
   movenode game_node = movenode();
 
   // First store the board pieces
-  for (int row = core::max_board_range-1; row >= 0; row--) {
+  for (int row = core::max_board_range - 1; row >= 0; row--) {
     for (size_t col = 0; col < core::max_board_range; col++) {
       if (*fen_iter == '/') {
         fen_iter++;
@@ -37,7 +42,8 @@ void core::chessgame::set_board(std::string fen)
         col += static_cast<size_t>(emptysquares);
         fen_iter++;
       } else {
-        m_board.at(static_cast<size_t>(row)).at(col) = static_cast<core::piece_t>(*fen_iter);
+        m_board.at(static_cast<size_t>(row)).at(col) =
+            static_cast<core::piece_t>(*fen_iter);
         fen_iter++;
       }
     }
@@ -98,10 +104,11 @@ void core::chessgame::set_board(std::string fen)
 void core::chessgame::show(bool flipped)
 {
   if (!flipped) {
-    for (int row = core::max_board_range-1; row >= 0; row--) {
+    for (int row = core::max_board_range - 1; row >= 0; row--) {
       std::cout << row + 1 << " ";
       for (size_t col = 0; col < max_board_range; col++) {
-        std::cout << '[' << this->m_board.at(static_cast<size_t>(row)).at(col) << ']';
+        std::cout << '[' << this->m_board.at(static_cast<size_t>(row)).at(col)
+                  << ']';
       }
       std::cout << "\n";
     }
@@ -109,7 +116,8 @@ void core::chessgame::show(bool flipped)
     for (size_t row = 0; row < core::max_board_range; row++) {
       std::cout << row + 1 << " ";
       for (int col = max_board_range - 1; col >= 0; col--) {
-        std::cout << '[' << this->m_board.at(row).at(static_cast<size_t>(col)) << ']';
+        std::cout << '[' << this->m_board.at(row).at(static_cast<size_t>(col))
+                  << ']';
       }
       std::cout << "\n";
     }
@@ -120,7 +128,7 @@ void core::chessgame::show(bool flipped)
       std::cout << static_cast<char>(file + 'a') << "  ";
     }
   } else {
-    for (int file = core::max_board_range-1; file >= 0; file--) {
+    for (int file = core::max_board_range - 1; file >= 0; file--) {
       std::cout << static_cast<char>(file + 'a') << "  ";
     }
   }
@@ -135,16 +143,19 @@ std::string core::chessgame::get_fen()
 {
   std::string fen;
   int empty_squares = 0;
-  for (int row = core::max_board_range-1; row >= 0; row--) {
+  for (int row = core::max_board_range - 1; row >= 0; row--) {
     for (size_t col = 0; col < max_board_range; col++) {
-      if (this->m_board.at(static_cast<size_t>(row)).at(col) == core::empty_square) {
+      if (this->m_board.at(static_cast<size_t>(row)).at(col)
+          == core::empty_square)
+      {
         empty_squares++;
       } else {
         if (empty_squares != 0) {
           fen += static_cast<char>(empty_squares + '1');
           empty_squares = 0;
         }
-        fen += std::to_string(this->m_board.at(static_cast<size_t>(row)).at(col));
+        fen +=
+            std::to_string(this->m_board.at(static_cast<size_t>(row)).at(col));
       }
     }
     if (empty_squares != 0) {
@@ -173,7 +184,7 @@ std::string core::chessgame::get_fen()
 
   fen += ' ';
   fen += m_game_tree[m_current_position_id].en_passant.file;
-  if(fen.back() != '-') {
+  if (fen.back() != '-') {
     fen += m_game_tree[m_current_position_id].en_passant.rank;
   }
   fen += ' ';
@@ -185,32 +196,38 @@ std::string core::chessgame::get_fen()
   return fen;
 }
 
-void core::chessgame::draw_line(
-    std::vector<core::coordinates>& coord_list,
-    std::pair<int, int> direction,
-    bool iterate)
+void core::chessgame::draw_line(std::vector<core::coordinates>& coord_list,
+                                std::pair<int, int> direction,
+                                bool iterate)
 {
   const int col = coord_list.back().file - 'a' + direction.first;
   const int row = coord_list.back().rank - '1' + direction.second;
-  if (row < 0 || row > core::max_board_range-1 || col < 0 || col > core::max_board_range-1){
+  if (row < 0 || row > core::max_board_range - 1 || col < 0
+      || col > core::max_board_range - 1)
+  {
     return;
   }
   core::coordinates new_coord {' ', ' '};
   new_coord.file = static_cast<char>(coord_list.back().file + direction.first);
   new_coord.rank = static_cast<char>(coord_list.back().rank + direction.second);
   coord_list.push_back(new_coord);
-  if(iterate && 
-     this->m_board.at(static_cast<size_t>(row)).at(static_cast<size_t>(col)) != core::empty_square) {
+  if (iterate
+      && this->m_board.at(static_cast<size_t>(row)).at(static_cast<size_t>(col))
+          != core::empty_square)
+  {
     draw_line(coord_list, direction, iterate);
   }
 }
 
-std::vector<core::coordinates> core::chessgame::get_available_king_moves(core::coordinates square)
+std::vector<core::coordinates> core::chessgame::get_available_king_moves(
+    core::coordinates square)
 {
   std::vector<core::coordinates> result;
   for (int steprow = -1; steprow <= 1; steprow++) {
     for (int stepcol = -1; stepcol <= 1; stepcol++) {
-      if (stepcol == 0 && steprow == 0) { continue; }
+      if (stepcol == 0 && steprow == 0) {
+        continue;
+      }
       result.push_back(square);
       // only find first squares
       draw_line(result, std::make_pair(stepcol, steprow), /*iterate=*/false);
@@ -220,14 +237,16 @@ std::vector<core::coordinates> core::chessgame::get_available_king_moves(core::c
   const core::piece_t piece = this->identify_piece(square);
   if (piece == core::white_king && square == core::white_king_starting_square) {
     if (m_game_tree[m_current_position_id].white_castle_kingside
-        && m_board[0][5] == core::empty_square && m_board[0][6] == core::empty_square)
+        && m_board[0][5] == core::empty_square
+        && m_board[0][6] == core::empty_square)
     {
       square.file += 2;
       result.push_back(square);
       square.file -= 2;
     }
     if (m_game_tree[m_current_position_id].white_castle_queenside
-        && m_board[0][3] == core::empty_square && m_board[0][2] == core::empty_square)
+        && m_board[0][3] == core::empty_square
+        && m_board[0][2] == core::empty_square)
     {
       square.file -= 2;
       result.push_back(square);
@@ -236,14 +255,16 @@ std::vector<core::coordinates> core::chessgame::get_available_king_moves(core::c
   }
   if (piece == core::black_king && square == black_king_starting_square) {
     if (m_game_tree[m_current_position_id].black_castle_kingside
-        && m_board[0][5] == core::empty_square && m_board[0][6] == core::empty_square)
+        && m_board[0][5] == core::empty_square
+        && m_board[0][6] == core::empty_square)
     {
       square.file += 2;
       result.push_back(square);
       square.file -= 2;
     }
     if (m_game_tree[m_current_position_id].black_castle_queenside
-        && m_board[0][3] == core::empty_square && m_board[0][2] == core::empty_square)
+        && m_board[0][3] == core::empty_square
+        && m_board[0][2] == core::empty_square)
     {
       square.file -= 2;
       result.push_back(square);
@@ -253,13 +274,15 @@ std::vector<core::coordinates> core::chessgame::get_available_king_moves(core::c
   return result;
 }
 
-std::vector<core::coordinates>
-core::chessgame::get_available_queen_moves(core::coordinates square)
+std::vector<core::coordinates> core::chessgame::get_available_queen_moves(
+    core::coordinates square)
 {
   std::vector<core::coordinates> result;
   for (int steprow = -1; steprow <= 1; steprow++) {
     for (int stepcol = -1; stepcol <= 1; stepcol++) {
-      if (stepcol == 0 && steprow == 0) { continue; }
+      if (stepcol == 0 && steprow == 0) {
+        continue;
+      }
       result.push_back(square);
       // iterate to the end of board or piece presence
       draw_line(result, std::make_pair(stepcol, steprow), /*iterate=*/true);
@@ -268,12 +291,15 @@ core::chessgame::get_available_queen_moves(core::coordinates square)
   return result;
 }
 
-std::vector<core::coordinates> core::chessgame::get_available_rook_moves(core::coordinates square)
+std::vector<core::coordinates> core::chessgame::get_available_rook_moves(
+    core::coordinates square)
 {
   std::vector<core::coordinates> result;
   for (int steprow = -1; steprow <= 1; steprow++) {
     for (int stepcol = -1; stepcol <= 1; stepcol++) {
-      if (abs(steprow) == abs(stepcol)) { continue; }
+      if (abs(steprow) == abs(stepcol)) {
+        continue;
+      }
       result.push_back(square);
       // iterate to the end of the board or piece presence.
       draw_line(result, std::make_pair(stepcol, steprow), /*iterate=*/true);
@@ -282,12 +308,15 @@ std::vector<core::coordinates> core::chessgame::get_available_rook_moves(core::c
   return result;
 }
 
-std::vector<core::coordinates> core::chessgame::get_available_bishop_moves(core::coordinates square)
+std::vector<core::coordinates> core::chessgame::get_available_bishop_moves(
+    core::coordinates square)
 {
   std::vector<core::coordinates> result;
   for (int steprow = -1; steprow <= 1; steprow++) {
     for (int stepcol = -1; stepcol <= 1; stepcol++) {
-      if (steprow == 0 || stepcol == 0) { continue; }
+      if (steprow == 0 || stepcol == 0) {
+        continue;
+      }
       result.push_back(square);
       // iterate to the end of the board or piece presence
       draw_line(result, std::make_pair(stepcol, steprow), /*iterate=*/true);
@@ -296,7 +325,8 @@ std::vector<core::coordinates> core::chessgame::get_available_bishop_moves(core:
   return result;
 }
 
-std::vector<core::coordinates> core::chessgame::get_available_pawn_moves(core::coordinates square)
+std::vector<core::coordinates> core::chessgame::get_available_pawn_moves(
+    core::coordinates square)
 {
   std::vector<coordinates> result;
   const core::piece_t piece = identify_piece(square);
@@ -307,11 +337,11 @@ std::vector<core::coordinates> core::chessgame::get_available_pawn_moves(core::c
       // rules are dealt with at higher logic level. Here we
       // are just returning all possible moves regardless of
       // capture or en_passant status.
-      if (steprow == 0 || 
-          (piece == core::black_pawn && steprow > 0) || 
-          (piece == core::white_pawn && steprow < 0)) {
+      if (steprow == 0 || (piece == core::black_pawn && steprow > 0)
+          || (piece == core::white_pawn && steprow < 0))
+      {
         continue;
-      }            
+      }
       result.push_back(square);
       draw_line(result, std::make_pair(stepcol, steprow), /*iterate=*/false);
     }
@@ -330,12 +360,15 @@ std::vector<core::coordinates> core::chessgame::get_available_pawn_moves(core::c
   return result;
 }
 
-std::vector<core::coordinates> core::chessgame::get_available_knight_moves(core::coordinates square)
+std::vector<core::coordinates> core::chessgame::get_available_knight_moves(
+    core::coordinates square)
 {
   std::vector<core::coordinates> result;
   for (int steprow = -2; steprow <= 2; steprow++) {
     for (int stepcol = -2; stepcol <= 2; stepcol++) {
-      if (steprow == 0 || stepcol == 0 || abs(steprow) == abs(stepcol)) { continue; }
+      if (steprow == 0 || stepcol == 0 || abs(steprow) == abs(stepcol)) {
+        continue;
+      }
       result.push_back(square);
       // iterate only once
       draw_line(result, std::make_pair(stepcol, steprow), /*iterate=*/false);
@@ -344,26 +377,26 @@ std::vector<core::coordinates> core::chessgame::get_available_knight_moves(core:
   return result;
 }
 
-std::vector<core::coordinates> core::chessgame::get_available_moves(core::coordinates square,
-                                                                    char piece)
+std::vector<core::coordinates> core::chessgame::get_available_moves(
+    core::coordinates square, char piece)
 {
   std::vector<core::coordinates> result;
-  switch(piece){
+  switch (piece) {
     case core::black_queen:
     case core::white_queen:
       result = this->get_available_queen_moves(square);
       break;
     case core::black_king:
     case core::white_king:
-      result = this->get_available_king_moves(square); 
+      result = this->get_available_king_moves(square);
       break;
     case core::white_rook:
     case core::black_rook:
-      result = this->get_available_rook_moves(square); 
+      result = this->get_available_rook_moves(square);
       break;
     case core::white_bishop:
     case core::black_bishop:
-      result = this->get_available_bishop_moves(square); 
+      result = this->get_available_bishop_moves(square);
       break;
     case core::white_pawn:
     case core::black_pawn:
@@ -371,7 +404,7 @@ std::vector<core::coordinates> core::chessgame::get_available_moves(core::coordi
       break;
     case core::white_knight:
     case core::black_knight:
-      result = get_available_knight_moves(square); 
+      result = get_available_knight_moves(square);
       break;
     default:
       std::cout << "Unknown piece type provided\n";
@@ -386,14 +419,16 @@ core::piece_t core::chessgame::identify_piece(core::coordinates coord)
   const int col = coord.file - 'a';
   const int row = coord.rank - '1';
   std::cout << col << " " << row << "\n";
-  return this->m_board.at(static_cast<size_t>(row)).at(static_cast<size_t>(col));
+  return this->m_board.at(static_cast<size_t>(row))
+      .at(static_cast<size_t>(col));
 }
 
 core::piece_t core::chessgame::identify_piece(int index)
 {
   const int row = index / core::max_board_range;
   const int col = index % core::max_board_range;
-  return this->m_board.at(static_cast<size_t>(row)).at(static_cast<size_t>(col));
+  return this->m_board.at(static_cast<size_t>(row))
+      .at(static_cast<size_t>(col));
 }
 
 void core::chessgame::show_possible_moves(core::coordinates square)
@@ -403,27 +438,36 @@ void core::chessgame::show_possible_moves(core::coordinates square)
     std::cout << "There is no piece there.\n";
     return;
   }
-  const std::vector<core::coordinates> choices = this->get_available_moves(square, piece);
-  std::array<std::array<char, core::max_board_range>, core::max_board_range> allowed_moves_board{};
+  const std::vector<core::coordinates> choices =
+      this->get_available_moves(square, piece);
+  std::array<std::array<char, core::max_board_range>, core::max_board_range>
+      allowed_moves_board {};
   for (int row = core::max_board_range; row >= 0; row--) {
     allowed_moves_board.at(static_cast<size_t>(row)).fill(core::empty_square);
   }
   int row = square.rank - '1';
   int col = square.file - 'a';
-  allowed_moves_board.at(static_cast<size_t>(row)).at(static_cast<size_t>(col)) = piece;
+  allowed_moves_board.at(static_cast<size_t>(row))
+      .at(static_cast<size_t>(col)) = piece;
 
-  for (auto choices_iter : choices)
-  {
+  for (auto choices_iter : choices) {
     row = choices_iter.rank - '1';
     col = choices_iter.file - 'a';
-    if (allowed_moves_board.at(static_cast<size_t>(row)).at(static_cast<size_t>(col)) != core::empty_square) { continue; }
-    allowed_moves_board.at(static_cast<size_t>(row)).at(static_cast<size_t>(col)) = 'X';
+    if (allowed_moves_board.at(static_cast<size_t>(row))
+            .at(static_cast<size_t>(col))
+        != core::empty_square)
+    {
+      continue;
+    }
+    allowed_moves_board.at(static_cast<size_t>(row))
+        .at(static_cast<size_t>(col)) = 'X';
   }
 
   for (row = core::max_board_range - 1; row >= 0; row--) {
     for (col = 0; col < core::max_board_range; col++) {
       std::cout << '[';
-      std::cout << allowed_moves_board.at(static_cast<size_t>(row)).at(static_cast<size_t>(col)); 
+      std::cout << allowed_moves_board.at(static_cast<size_t>(row))
+                       .at(static_cast<size_t>(col));
       std::cout << ']';
     }
     std::cout << "\n";
@@ -434,7 +478,7 @@ void core::chessgame::show_possible_moves(core::coordinates square)
 int core::chessgame::play_move(std::pair<coordinates, coordinates> move_set)
 {
   // Check that we are getting the right formatted string
-  //if (move_set.length() != 4) {
+  // if (move_set.length() != 4) {
   //  std::cout << "Please enter move in the format: \n";
   //  std::cout << " <startfile><startrow><endfile><endrow>\n";
   //  std::cout << "e.g. e4 -> e2e4" << "\n";
@@ -446,8 +490,9 @@ int core::chessgame::play_move(std::pair<coordinates, coordinates> move_set)
   const core::piece_t piece = identify_piece(start_square);
   std::cout << piece << "\n";
   bool match = false;
-  const std::vector<core::coordinates> choices = get_available_moves(start_square, piece);
-  for (const auto & choice : choices) {
+  const std::vector<core::coordinates> choices =
+      get_available_moves(start_square, piece);
+  for (const auto& choice : choices) {
     if (choice == end_square) {
       match = true;
       break;
@@ -456,7 +501,7 @@ int core::chessgame::play_move(std::pair<coordinates, coordinates> move_set)
   // return if the move doesn't make sense
   if (!match) {
     return 1;
-  } 
+  }
   // check whether there is a capture (empty squares return true)
   if (!is_valid_capture(move_set)) {
     return 1;
@@ -465,7 +510,8 @@ int core::chessgame::play_move(std::pair<coordinates, coordinates> move_set)
   return 0;
 }
 
-bool core::chessgame::is_valid_capture(std::pair<core::coordinates, core::coordinates> move_set)
+bool core::chessgame::is_valid_capture(
+    std::pair<core::coordinates, core::coordinates> move_set)
 {
   const core::piece_t piece = identify_piece(move_set.first);
   const core::piece_t captured_piece = identify_piece(move_set.second);
@@ -473,26 +519,30 @@ bool core::chessgame::is_valid_capture(std::pair<core::coordinates, core::coordi
   if (piece == core::black_pawn || piece == core::white_pawn) {
     if (captured_piece == empty_square
         && move_set.first.file == move_set.second.file
-        && abs(piece - captured_piece) > 8) {
+        && abs(piece - captured_piece) > 8)
+    {
       return true;
-    } return captured_piece != core::empty_square
-             && move_set.first.rank != move_set.second.rank;
-  } if ((piece - captured_piece) > core::max_board_range) {
+    }
+    return captured_piece != core::empty_square
+        && move_set.first.rank != move_set.second.rank;
+  }
+  if ((piece - captured_piece) > core::max_board_range) {
     return true;
-  } return captured_piece == core::empty_square;
+  }
+  return captured_piece == core::empty_square;
 }
 
 core::coordinates core::chessgame::find_king(char color)
 {
   size_t temp_node_id = m_current_position_id;
   core::piece_t piece = core::empty_square;
-  core::coordinates square{' ', ' '};
+  core::coordinates square {' ', ' '};
   if (color == core::black_color) {
     piece = core::black_king;
     square = {'e', '8'};
   } else {
     piece = core::white_king;
-    square = {'e', '1'}; 
+    square = {'e', '1'};
   }
 
   // easiest way is to look at the moves played
@@ -521,19 +571,21 @@ core::coordinates core::chessgame::find_king(char color)
 }
 
 // TODO: finish implementation of checking for checked king
-bool core::chessgame::king_in_check(std::pair<core::coordinates, core::coordinates> move_set, 
-                                    char color)
+bool core::chessgame::king_in_check(
+    std::pair<core::coordinates, core::coordinates> move_set, char color)
 {
   return false;
 }
 
 // TODO: finish implementation for pinned pieces
-bool core::chessgame::piece_pinned(std::pair<core::coordinates, core::coordinates> move_set)
+bool core::chessgame::piece_pinned(
+    std::pair<core::coordinates, core::coordinates> move_set)
 {
   return false;
 }
 
-void core::chessgame::update_board(std::pair<core::coordinates, core::coordinates> move_set)
+void core::chessgame::update_board(
+    std::pair<core::coordinates, core::coordinates> move_set)
 {
   const core::piece_t piece = identify_piece(move_set.first);
   const core::coordinates start_square = move_set.first;
@@ -594,30 +646,41 @@ void core::chessgame::update_board(std::pair<core::coordinates, core::coordinate
     if (end_square.file - start_square.file == 2 && piece == core::white_king) {
       m_board[0][7] = core::empty_square;
       m_board[0][5] = core::white_rook;
-    } else if (end_square.file - start_square.file == -2 && piece == core::white_king)
+    } else if (end_square.file - start_square.file == -2
+               && piece == core::white_king)
     {
       m_board[0][0] = core::empty_square;
       m_board[0][3] = core::white_rook;
-    } else if (end_square.file - start_square.file == 2 && piece == core::black_king)
+    } else if (end_square.file - start_square.file == 2
+               && piece == core::black_king)
     {
       m_board[7][7] = core::empty_square;
       m_board[7][5] = core::black_rook;
-    } else if (end_square.file - start_square.file == -2 && piece == core::black_king)
+    } else if (end_square.file - start_square.file == -2
+               && piece == core::black_king)
     {
       m_board[7][0] = core::empty_square;
       m_board[7][3] = core::black_rook;
     }
   } else if (piece == core::black_rook || piece == core::white_rook) {
-    if (piece == core::white_rook && start_square == core::coordinates('a', '1')) {
+    if (piece == core::white_rook
+        && start_square == core::coordinates('a', '1'))
+    {
       added_movenode.white_castle_queenside = false;
     }
-    if (piece == core::white_rook && start_square == core::coordinates('h', '1')) {
+    if (piece == core::white_rook
+        && start_square == core::coordinates('h', '1'))
+    {
       added_movenode.white_castle_kingside = false;
     }
-    if (piece == core::black_rook && start_square == core::coordinates('a', '8')) {
+    if (piece == core::black_rook
+        && start_square == core::coordinates('a', '8'))
+    {
       added_movenode.black_castle_queenside = false;
     }
-    if (piece == core::black_rook && start_square == core::coordinates('h', '8')) {
+    if (piece == core::black_rook
+        && start_square == core::coordinates('h', '8'))
+    {
       added_movenode.black_castle_queenside = false;
     }
   }
@@ -627,7 +690,8 @@ void core::chessgame::update_board(std::pair<core::coordinates, core::coordinate
   const size_t new_position_id = find_available_tree_id();
   if (new_position_id == 0) {
     m_game_tree.push_back(added_movenode);
-    m_game_tree[m_current_position_id].sidelines.push_back(m_current_position_id + 1);
+    m_game_tree[m_current_position_id].sidelines.push_back(m_current_position_id
+                                                           + 1);
     m_current_position_id = m_game_tree.size() - 1;
   } else {
     m_game_tree[new_position_id] = added_movenode;
@@ -667,7 +731,8 @@ std::string core::chessgame::get_pgn()
   return pgn;
 }
 
-std::string core::chessgame::generate_move_pgn(std::pair<core::coordinates, core::coordinates> move_set)
+std::string core::chessgame::generate_move_pgn(
+    std::pair<core::coordinates, core::coordinates> move_set)
 {
   std::string result;
   const core::coordinates start_square = move_set.first;
@@ -675,7 +740,7 @@ std::string core::chessgame::generate_move_pgn(std::pair<core::coordinates, core
   const core::piece_t piece = identify_piece(start_square);
 
   // once again pawns are special
-  if (piece != core::white_pawn && piece != core::black_pawn){
+  if (piece != core::white_pawn && piece != core::black_pawn) {
     result += std::to_string(piece);
   }
 
@@ -692,7 +757,7 @@ std::string core::chessgame::generate_move_pgn(std::pair<core::coordinates, core
     available_moves_list = get_available_moves(end_square, piece);
   }
   int count = 0;
-  for (auto& iter : available_moves_list){
+  for (auto& iter : available_moves_list) {
     if (identify_piece(iter) == piece) {
       count++;
       ambiguous_moves_list.push_back(iter);
@@ -702,8 +767,7 @@ std::string core::chessgame::generate_move_pgn(std::pair<core::coordinates, core
   if (count > 1) {
     bool diff_row = false;
     bool diff_col = false;
-    for (auto & iter : ambiguous_moves_list)
-    {
+    for (auto& iter : ambiguous_moves_list) {
       if (start_square != iter) {
         diff_row = (start_square.rank != iter.rank);
         diff_col = (start_square.file != iter.file);
@@ -727,4 +791,3 @@ std::string core::chessgame::generate_move_pgn(std::pair<core::coordinates, core
 
   return result;
 }
-
